@@ -25,7 +25,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-primary);
     line-height: 1.6;
@@ -34,6 +34,15 @@ body {
     background-image:
         radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.1) 0%, transparent 20%);
+}
+
+h1,
+h2,
+h3,
+.nav-links a,
+.btn {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
 }
 
 /* Navigation */
@@ -145,14 +154,15 @@ section {
 }
 
 h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
+    font-size: 4rem;
+    font-weight: 700;
     margin-bottom: 0.5rem;
     background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     opacity: 0;
     animation: fadeUp 0.8s ease-out forwards;
+    letter-spacing: -0.03em;
 }
 
 .education-block {
