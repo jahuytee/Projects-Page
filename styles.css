@@ -1,12 +1,11 @@
-/* Modern Reset & Base Styles */
 :root {
-    --bg-dark: #0f172a;
-    --bg-card: rgba(30, 41, 59, 0.7);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --bg-dark: #050505;
+    --bg-card: rgba(23, 23, 23, 0.7);
+    --text-primary: #ffffff;
+    --text-secondary: #a3a3a3;
     --accent-primary: #38bdf8;
     --accent-secondary: #818cf8;
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.08);
     --blur: 12px;
     --nav-height: 80px;
 }
