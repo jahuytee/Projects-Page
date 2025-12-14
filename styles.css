@@ -141,8 +141,8 @@ section {
     height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--accent-primary);
-    box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2);
+    border: 3px solid var(--text-primary);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
     /* animation: fadeUp 0.8s ease-out forwards; */
     /* layout shift prevention, simplified */
 }
