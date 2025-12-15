@@ -514,13 +514,22 @@ h1 {
 }
 
 /* Updated Button Styles */
+/* Updated Button Styles */
 .back-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     text-decoration: none !important;
-    /* Force remove blue underline/color */
+    background: rgba(255, 255, 255, 0.1) !important;
+    /* Glass effect override */
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     color: white !important;
+    backdrop-filter: blur(4px);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px);
 }
 
 .btn-download {
@@ -528,20 +537,22 @@ h1 {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: var(--accent-primary);
+    background: linear-gradient(45deg, #10b981, #0ea5e9);
+    /* Visible Gradient */
     color: white !important;
-    /* Force white text */
     text-decoration: none !important;
     border-radius: 8px;
     font-weight: 500;
-    transition: box-shadow 0.3s ease;
+    transition: all 0.3s ease;
     border: none;
     cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-download:hover {
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
     transform: translateY(-2px);
+    background: linear-gradient(45deg, #059669, #0284c7);
 }
 
 /* Report Card Clean Up */
