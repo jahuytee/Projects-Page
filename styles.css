@@ -477,6 +477,80 @@ h1 {
 }
 
 .contact-info h3,
+/* Header Layout */
+.header-top {
+    margin-bottom: 2rem;
+}
+
+.header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.detail-header h1 {
+    font-size: 2.5rem;
+    background: var(--text-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Overview Section */
+.overview-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.project-showcase {
+    width: 100%;
+}
+
+/* Updated Button Styles */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none !important;
+    /* Force remove blue underline/color */
+    color: white !important;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--accent-primary);
+    color: white !important;
+    /* Force white text */
+    text-decoration: none !important;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-download:hover {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Report Card Clean Up */
+.report-card {
+    color: var(--text-secondary) !important;
+    text-decoration: none !important;
+}
+
+.report-card:hover {
+    color: var(--text-primary) !important;
+}
+
 .contact-form h3 {
     font-size: 1.5rem;
     color: var(--text-primary);

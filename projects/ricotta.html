@@ -14,8 +14,15 @@
     <div class="project-detail-container">
         <!-- Header -->
         <header class="detail-header">
-            <a href="../index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
-            <h1>Autonomous Mobile Robot (Ricotta)</h1>
+            <div class="header-top">
+                <a href="../index.html" class="btn btn-sm btn-glass back-btn"><i class="fa-solid fa-arrow-left"></i>
+                    Back to Home</a>
+            </div>
+            <div class="header-main">
+                <h1>Autonomous Mobile Robot</h1>
+                <a href="../assets/documents/ricotta-code.zip" class="btn btn-download"><i
+                        class="fa-solid fa-download"></i> Download Source Code</a>
+            </div>
             <div class="detail-meta">
                 <span><i class="fa-regular fa-calendar"></i> Mar 2025 – Jun 2025</span>
                 <span class="tech-tag">Python</span>
@@ -23,8 +30,6 @@
                 <span class="tech-tag">Arduino</span>
                 <span class="tech-tag">Control Stacks</span>
             </div>
-            <a href="../assets/documents/ricotta-code.zip" class="btn btn-download"><i class="fa-solid fa-download"></i>
-                Download Source Code (.zip)</a>
         </header>
 
         <!-- Main Content Grid -->
@@ -33,47 +38,26 @@
             <!-- Description & Logic -->
             <section class="detail-section glass-panel">
                 <h2>Project Overview</h2>
-                <ul class="detail-list">
-                    <li>Developed an autonomous mobile robot using IR and ultrasonic sensing, L298 motor drivers, and a
-                        Raspberry Pi–Arduino control stack.</li>
-                    <li>Implemented navigation behaviors (line-following, intersection detection, wall-following) with
-                        real-time feedback control and multithreaded execution.</li>
-                    <li>Designed a grid-based mapping and planning system using Dijkstra’s algorithm, enabling automatic
-                        routing and dynamic rerouting when paths were obstructed.</li>
-                    <li>Built a regression-based turning model to accurately predict motor drive times for precise angle
-                        control across varying surfaces.</li>
-                    <li>Integrated sensing, mapping, planning, and motor control into a robust multithreaded Python
-                        framework for reliable autonomous operation.</li>
-                </ul>
-            </section>
-
-            <!-- Code Browser -->
-            <section class="detail-section glass-panel">
-                <h2>Code Structure Browser</h2>
-                <p class="browser-hint">Select a file to view its source code (loaded from "goals9" final
-                    implementation).</p>
-                <div class="code-browser">
-                    <div class="file-tree">
-                        <div class="tree-item active" onclick="viewFile('brain.py')"><i class="fa-brands fa-python"></i>
-                            brain.py</div>
-                        <div class="tree-item" onclick="viewFile('navigation.py')"><i class="fa-brands fa-python"></i>
-                            navigation.py</div>
-                        <div class="tree-item" onclick="viewFile('MapBuilding.py')"><i class="fa-brands fa-python"></i>
-                            MapBuilding.py</div>
-                        <div class="tree-item" onclick="viewFile('DriveSystem.py')"><i class="fa-brands fa-python"></i>
-                            DriveSystem.py</div>
-                        <div class="tree-item" onclick="viewFile('street_behaviors.py')"><i
-                                class="fa-brands fa-python"></i> street_behaviors.py</div>
-                        <div class="tree-item" onclick="viewFile('HerdingAndWallFollowingBehavior.py')"><i
-                                class="fa-brands fa-python"></i> HerdingAndWallFollowingBehavior.py</div>
-                        <div class="tree-item" onclick="viewFile('AngleSensor.py')"><i class="fa-brands fa-python"></i>
-                            AngleSensor.py</div>
-                        <div class="tree-item" onclick="viewFile('Sense.py')"><i class="fa-brands fa-python"></i>
-                            Sense.py</div>
+                <div class="overview-content">
+                    <div class="project-showcase">
+                        <!-- Temporary Placeholder Image -->
+                        <div class="placeholder-img"
+                            style="background: linear-gradient(135deg, #10b981, #0f172a); height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-robot" style="font-size: 5rem; color: rgba(255,255,255,0.2);"></i>
+                        </div>
                     </div>
-                    <div class="code-viewer">
-                        <pre><code id="code-content">Select a file to view...</code></pre>
-                    </div>
+                    <ul class="detail-list">
+                        <li>Developed an autonomous mobile robot using IR and ultrasonic sensing, L298 motor drivers,
+                            and a Raspberry Pi–Arduino control stack.</li>
+                        <li>Implemented navigation behaviors (line-following, intersection detection, wall-following)
+                            with real-time feedback control and multithreaded execution.</li>
+                        <li>Designed a grid-based mapping and planning system using Dijkstra’s algorithm, enabling
+                            automatic routing and dynamic rerouting when paths were obstructed.</li>
+                        <li>Built a regression-based turning model to accurately predict motor drive times for precise
+                            angle control across varying surfaces.</li>
+                        <li>Integrated sensing, mapping, planning, and motor control into a robust multithreaded Python
+                            framework for reliable autonomous operation.</li>
+                    </ul>
                 </div>
             </section>
 
@@ -118,40 +102,8 @@
                     </a>
                 </div>
             </section>
-
         </div>
     </div>
-
-    <!-- Scripts -->
-    <script src="../assets/js/ricotta-data.js"></script>
-    <script>
-        // Code Viewer Logic
-        function viewFile(filename) {
-            const codePres = document.getElementById('code-content');
-            const items = document.querySelectorAll('.tree-item');
-
-            // Update active state
-            items.forEach(item => {
-                if (item.textContent.trim() === filename) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-
-            // Load content
-            if (projectFiles[filename]) {
-                codePres.textContent = projectFiles[filename];
-            } else {
-                codePres.textContent = "Error loading file content.";
-            }
-        }
-
-        // Initialize with brain.py
-        window.onload = function () {
-            viewFile('brain.py');
-        }
-    </script>
 </body>
 
 </html>
