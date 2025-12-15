@@ -9,6 +9,7 @@
     --glass-border: rgba(255, 255, 255, 0.1);
     --blur: 16px;
     --nav-height: 80px;
+    --text-gradient: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
 }
 
 html {
@@ -493,6 +494,8 @@ h1 {
 
 .detail-header h1 {
     font-size: 2.5rem;
+    color: var(--text-primary);
+    /* Fallback */
     background: var(--text-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
