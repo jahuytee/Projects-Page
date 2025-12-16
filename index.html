@@ -585,6 +585,24 @@
                         ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
                         ctx.lineWidth = 1;
                         ctx.stroke();
+
+                        // Spark effect at midpoint for very close particles
+                        if (distance < 60 && Math.random() > 0.7) {
+                            const midX = (particles[i].x + particles[j].x) / 2;
+                            const midY = (particles[i].y + particles[j].y) / 2;
+                            const sparkSize = (1 - distance / 60) * 6 + 2;
+
+                            // Draw spark glow
+                            const gradient = ctx.createRadialGradient(midX, midY, 0, midX, midY, sparkSize * 2);
+                            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                            gradient.addColorStop(0.3, 'rgba(56, 189, 248, 0.6)');
+                            gradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+
+                            ctx.beginPath();
+                            ctx.arc(midX, midY, sparkSize * 2, 0, Math.PI * 2);
+                            ctx.fillStyle = gradient;
+                            ctx.fill();
+                        }
                     }
                 }
             }
