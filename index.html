@@ -321,9 +321,20 @@
                 const gainNode = audioContext.createGain();
                 gainNode.gain.value = 0.5; // Audio file volume
 
+                // Create Low Pass Filter (for visualizer only)
+                // This makes the wave look smoother/more sinusoidal by removing jagged high freqs
+                const filter = audioContext.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.value = 150; // Cutoff at 150Hz (Bass only)
+
                 sourceNode.connect(gainNode);
-                gainNode.connect(analyser);
-                analyser.connect(audioContext.destination);
+
+                // Path 1: Ears (Full Fidelity)
+                gainNode.connect(audioContext.destination);
+
+                // Path 2: Eyes (Smoothed)
+                gainNode.connect(filter);
+                filter.connect(analyser);
 
                 audio.play().catch(e => console.log('Playback failed:', e));
 
