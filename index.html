@@ -297,7 +297,7 @@
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 256; // Defines resolution
+                    analyser.fftSize = 2048; // Higher resolution = more crests/troughs
                 }
 
                 // MP3 File Mapping
