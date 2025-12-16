@@ -383,24 +383,35 @@
                 vizCtx.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent
                 vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
 
-                vizCtx.lineWidth = 2;
-                vizCtx.strokeStyle = '#22d3ee'; // Cyan
+                // Create Gradient (Cyan -> Purple)
+                const gradient = vizCtx.createLinearGradient(0, 0, vizCanvas.width, 0);
+                gradient.addColorStop(0, '#22d3ee');
+                gradient.addColorStop(0.5, '#a855f7');
+                gradient.addColorStop(1, '#e879f9');
+
+                vizCtx.lineWidth = 3;
+                vizCtx.strokeStyle = gradient;
                 vizCtx.beginPath();
 
                 const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
                 let x = 0;
 
-                for (let i = 0; i < bufferLength; i++) {
+                // Curve Smoothing (Quadratic Bezier)
+                vizCtx.moveTo(0, dataArray[0] / 128.0 * vizCanvas.height / 2);
+
+                for (let i = 0; i < bufferLength - 1; i++) {
                     const v = dataArray[i] / 128.0;
                     const y = v * vizCanvas.height / 2;
 
-                    if (i === 0) {
-                        vizCtx.moveTo(x, y);
-                    } else {
-                        vizCtx.lineTo(x, y);
-                    }
+                    const nextV = dataArray[i + 1] / 128.0;
+                    const nextY = nextV * vizCanvas.height / 2;
+                    const nextX = x + sliceWidth;
 
-                    x += sliceWidth;
+                    const cpX = (x + nextX) / 2;
+                    const cpY = (y + nextY) / 2;
+
+                    vizCtx.quadraticCurveTo(x, y, cpX, cpY);
+                    x = nextX;
                 }
 
                 vizCtx.lineTo(vizCanvas.width, vizCanvas.height / 2);
