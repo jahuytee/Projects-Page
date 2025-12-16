@@ -818,3 +818,28 @@ h1 {
         transform: rotate(360deg);
     }
 }
+
+/* Interactive Circuit Schematic */
+.circuit-component {
+    cursor: pointer;
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.circuit-component:hover {
+    filter: url(#glow) drop-shadow(0 0 8px currentColor);
+    transform: scale(1.08);
+}
+
+.circuit-component:hover path,
+.circuit-component:hover line,
+.circuit-component:hover polygon,
+.circuit-component:hover rect:not(.hitbox) {
+    stroke-width: 3.5;
+}
+
+.circuit-tooltip {
+    background: rgba(20, 20, 20, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
