@@ -20,10 +20,6 @@
     <canvas id="particleCanvas"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
 
-    <!-- Cursor Trail Canvas -->
-    <canvas id="cursorTrailCanvas"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none;"></canvas>
-
     <nav>
         <ul class="nav-links">
             <li><a href="#about">About Me</a></li>
@@ -42,13 +38,7 @@
                         <img src="assets/images/profile.jpg" alt="Jason Tran" class="profile-img">
                     </div>
                     <div class="hero-text">
-                        <!-- Terminal Intro -->
-                        <div class="terminal-intro"
-                            style="font-family: 'Courier New', monospace; margin-bottom: 0.5rem;">
-                            <span id="terminalOutput" style="color: #22d3ee;"></span><span id="terminalCursor"
-                                style="color: #a855f7; animation: blink 1s infinite;">▌</span>
-                        </div>
-                        <h1 id="heroName" style="opacity: 0; transition: opacity 0.5s;">Jason Tran</h1>
+                        <h1>Jason Tran</h1>
                         <div class="education-block">
                             <h3>California Institute of Technology, Pasadena, CA</h3>
                             <p>B.S, Electrical Engineering (Minor: Environmental Science Engineering)</p>
@@ -307,7 +297,7 @@
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 2048; // Higher resolution = more crests/troughs
+                    analyser.fftSize = 4096; // Even higher resolution
                 }
 
                 // MP3 File Mapping
@@ -777,121 +767,6 @@
             resizeCanvas();
             initParticles();
         });
-    </script>
-
-    <!-- Terminal Intro Script -->
-    <script>
-        (function () {
-            const output = document.getElementById('terminalOutput');
-            const cursor = document.getElementById('terminalCursor');
-            const heroName = document.getElementById('heroName');
-
-            const commands = [
-                { text: '> whoami', delay: 100 },
-                { text: '\n  Jason Tran', delay: 50, isResult: true },
-                { text: '\n> cat intro.txt', delay: 80 },
-                { text: '\n  Electrical Engineer @ Caltech', delay: 40, isResult: true }
-            ];
-
-            let currentCommand = 0;
-            let currentChar = 0;
-            let currentText = '';
-
-            function typeCommand() {
-                if (currentCommand >= commands.length) {
-                    // Done typing, show the name
-                    setTimeout(() => {
-                        heroName.style.opacity = '1';
-                        cursor.style.display = 'none';
-                    }, 500);
-                    return;
-                }
-
-                const cmd = commands[currentCommand];
-                if (currentChar < cmd.text.length) {
-                    currentText += cmd.text[currentChar];
-                    output.innerHTML = currentText.replace(/\n/g, '<br>').replace(/  /g, '&nbsp;&nbsp;');
-                    currentChar++;
-                    setTimeout(typeCommand, cmd.delay);
-                } else {
-                    currentCommand++;
-                    currentChar = 0;
-                    setTimeout(typeCommand, 400);
-                }
-            }
-
-            // Start after a short delay
-            setTimeout(typeCommand, 800);
-        })();
-    </script>
-
-    <!-- Cursor Trail Script -->
-    <script>
-        (function () {
-            const canvas = document.getElementById('cursorTrailCanvas');
-            const ctx = canvas.getContext('2d');
-
-            let particles = [];
-            let mouse = { x: 0, y: 0 };
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            document.addEventListener('mousemove', (e) => {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
-
-                // Create particles on mouse move
-                for (let i = 0; i < 2; i++) {
-                    particles.push({
-                        x: mouse.x,
-                        y: mouse.y,
-                        size: Math.random() * 4 + 2,
-                        speedX: (Math.random() - 0.5) * 2,
-                        speedY: (Math.random() - 0.5) * 2,
-                        life: 1,
-                        color: Math.random() > 0.5 ? '#22d3ee' : '#a855f7'
-                    });
-                }
-            });
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                particles.forEach((p, index) => {
-                    p.x += p.speedX;
-                    p.y += p.speedY;
-                    p.life -= 0.02;
-                    p.size *= 0.98;
-
-                    if (p.life <= 0 || p.size < 0.5) {
-                        particles.splice(index, 1);
-                        return;
-                    }
-
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = p.color;
-                    ctx.globalAlpha = p.life;
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                });
-
-                // Limit particles
-                if (particles.length > 100) {
-                    particles = particles.slice(-100);
-                }
-
-                requestAnimationFrame(animate);
-            }
-
-            animate();
-        })();
     </script>
 </body>
 
