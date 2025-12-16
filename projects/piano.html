@@ -413,7 +413,169 @@
                     </div>
 
                 </div>
-        </div>
+            </section>
+
+            <!-- Section 4: Simulations -->
+            <section class="detail-section glass-panel">
+                <h2>4. Simulations</h2>
+                <div class="text-content">
+                    <p>
+                        We tested the circuit using LTspice with input voltages corresponding to three representative
+                        notes: A, B, and C. Each of the notes correspond to specific frequency and voltage as summarized
+                        in Table 1. The waveforms generated in simulation closely matched our expectations.
+                        These simulations are displayed below in Figures 7, 8 and 9.
+                    </p>
+
+                    <!-- Simulation A -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/piano/sim_note_a.png" alt="Simulating A Note"
+                            style="width: 100%; max-width: 800px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 7: Simulating A Note
+                        </p>
+                    </div>
+
+                    <!-- Simulation B -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/piano/sim_note_b.png" alt="Simulating B Note"
+                            style="width: 100%; max-width: 800px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 8: Simulating B Note
+                        </p>
+                    </div>
+
+                    <!-- Simulation C -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/piano/sim_note_c.png" alt="Simulating C Note"
+                            style="width: 100%; max-width: 800px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 9: Simulating C Note
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Implementation -->
+            <section class="detail-section glass-panel">
+                <h2>5. Implementation</h2>
+                <div class="text-content">
+                    <h3>Amplifier and Speaker</h3>
+                    <p>
+                        We used an LM386 audio amplifier to drive the speaker. The gain was configured via a
+                        capacitor between pins 1 and 8, and the input/output were AC-coupled to remove DC
+                        offset. The entire system was powered by the lab bench supply.
+                    </p>
+
+                    <h3>Breadboard Integration</h3>
+                    <p>
+                        All subsystems were assembled on three breadboards. One containing the buttons, whose
+                        ground and power were directly connected to a half-breadboard that contain the Arduino
+                        Micro and DAC. The V<sub>Out</sub> of the DAC was directly connected to V<sub>in</sub> of our
+                        V2F. Also, after
+                        our V2F, we have a low pass filter consisting of another UA741 op-amp and two resistors, 3
+                        kΩ and 750 Ω. Special attention was paid to grounding and wire layout to minimize
+                        signal issues.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Section 6: Code -->
+            <section class="detail-section glass-panel">
+                <h2>6. Code</h2>
+                <div class="text-content">
+                    <p>
+                        The following Arduino sketch interfaces an MCP4725 digital-to-analog converter (via
+                        the Adafruit MCP4725 library) and produces discrete output voltages selected by 12 input
+                        buttons.
+                    </p>
+
+                    <!-- Code Block -->
+                    <div
+                        style="margin-top: 2rem; background: #1e1e1e; border-radius: 12px; padding: 1.5rem; overflow-x: auto; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.6; border: 1px solid rgba(255,255,255,0.1);">
+                        <pre style="margin: 0; color: #d4d4d4;"><code><span style="color: #c586c0;">#include</span> <span style="color: #ce9178;">&lt;Wire.h&gt;</span>
+<span style="color: #c586c0;">#include</span> <span style="color: #ce9178;">&lt;Adafruit_MCP4725.h&gt;</span>
+
+<span style="color: #4ec9b0;">Adafruit_MCP4725</span> dac;  <span style="color: #6a9955;">// Create DAC object</span>
+
+<span style="color: #569cd6;">const float</span> vcc = <span style="color: #b5cea8;">5.00</span>;  <span style="color: #6a9955;">// DAC supply voltage</span>
+
+<span style="color: #569cd6;">const int</span> button1 = <span style="color: #b5cea8;">12</span>;
+<span style="color: #569cd6;">const int</span> button2 = <span style="color: #b5cea8;">11</span>;
+<span style="color: #569cd6;">const int</span> button3 = <span style="color: #b5cea8;">10</span>;
+<span style="color: #569cd6;">const int</span> button4 = <span style="color: #b5cea8;">9</span>;
+<span style="color: #569cd6;">const int</span> button5 = <span style="color: #b5cea8;">8</span>;
+<span style="color: #569cd6;">const int</span> button6 = <span style="color: #b5cea8;">7</span>;
+<span style="color: #569cd6;">const int</span> button7 = <span style="color: #b5cea8;">6</span>;
+<span style="color: #569cd6;">const int</span> button8 = <span style="color: #b5cea8;">5</span>;
+<span style="color: #569cd6;">const int</span> button9 = <span style="color: #b5cea8;">4</span>;
+<span style="color: #569cd6;">const int</span> button10 = <span style="color: #b5cea8;">1</span>;
+<span style="color: #569cd6;">const int</span> button11 = <span style="color: #b5cea8;">0</span>;
+<span style="color: #569cd6;">const int</span> button12 = <span style="color: #b5cea8;">16</span>;
+
+<span style="color: #569cd6;">void</span> <span style="color: #dcdcaa;">setup</span>() {
+    Serial.<span style="color: #dcdcaa;">begin</span>(<span style="color: #b5cea8;">9600</span>);
+    dac.<span style="color: #dcdcaa;">begin</span>(<span style="color: #b5cea8;">0x60</span>);
+
+    <span style="color: #dcdcaa;">pinMode</span>(button1, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button2, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button3, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button4, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button5, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button6, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button7, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button8, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button9, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button10, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button11, INPUT_PULLUP);
+    <span style="color: #dcdcaa;">pinMode</span>(button12, INPUT_PULLUP);
+
+    <span style="color: #dcdcaa;">pinMode</span>(LED_BUILTIN, OUTPUT);
+}
+
+<span style="color: #569cd6;">void</span> <span style="color: #dcdcaa;">loop</span>() {
+    <span style="color: #c586c0;">if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button1) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.35</span>, <span style="color: #b5cea8;">1</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button2) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.37</span>, <span style="color: #b5cea8;">2</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button3) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.39</span>, <span style="color: #b5cea8;">3</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button4) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.42</span>, <span style="color: #b5cea8;">4</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button5) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.45</span>, <span style="color: #b5cea8;">5</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button6) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.475</span>, <span style="color: #b5cea8;">6</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button7) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.505</span>, <span style="color: #b5cea8;">7</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button8) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.535</span>, <span style="color: #b5cea8;">8</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button9) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.575</span>, <span style="color: #b5cea8;">9</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button10) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.650</span>, <span style="color: #b5cea8;">10</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button11) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.615</span>, <span style="color: #b5cea8;">11</span>);
+    <span style="color: #c586c0;">else if</span> (<span style="color: #dcdcaa;">digitalRead</span>(button12) == LOW) <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #b5cea8;">0.700</span>, <span style="color: #b5cea8;">12</span>);
+    <span style="color: #c586c0;">else</span> {
+        dac.<span style="color: #dcdcaa;">setVoltage</span>(<span style="color: #b5cea8;">0</span>, <span style="color: #569cd6;">false</span>);
+        <span style="color: #dcdcaa;">digitalWrite</span>(LED_BUILTIN, LOW);
+    }
+    <span style="color: #dcdcaa;">delay</span>(<span style="color: #b5cea8;">10</span>);
+}
+
+<span style="color: #569cd6;">void</span> <span style="color: #dcdcaa;">outputVoltage</span>(<span style="color: #569cd6;">float</span> vout, <span style="color: #569cd6;">int</span> buttonNum) {
+    <span style="color: #4ec9b0;">uint16_t</span> code = (vout / vcc) * <span style="color: #b5cea8;">4095.0</span> + <span style="color: #b5cea8;">0.5</span>;  <span style="color: #6a9955;">// Conversion</span>
+    dac.<span style="color: #dcdcaa;">setVoltage</span>(code, <span style="color: #569cd6;">false</span>);
+    <span style="color: #dcdcaa;">digitalWrite</span>(LED_BUILTIN, HIGH);
+    Serial.<span style="color: #dcdcaa;">print</span>(<span style="color: #ce9178;">"Button "</span>);
+    Serial.<span style="color: #dcdcaa;">print</span>(buttonNum);
+    Serial.<span style="color: #dcdcaa;">print</span>(<span style="color: #ce9178;">" pressed. Output voltage: "</span>);
+    Serial.<span style="color: #dcdcaa;">print</span>(vout, <span style="color: #b5cea8;">3</span>);
+    Serial.<span style="color: #dcdcaa;">println</span>(<span style="color: #ce9178;">" V"</span>);
+}</code></pre>
+                    </div>
+                    <p class="caption"
+                        style="text-align: center; color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem;">
+                        Listing 1: Full Arduino sketch that interfaces an MCP4725 DAC and produces discrete output
+                        voltages selected by 12 input buttons
+                    </p>
+                </div>
+            </section>
 </body>
 
 </html>
