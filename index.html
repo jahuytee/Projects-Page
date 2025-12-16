@@ -153,7 +153,7 @@
 
                             <!-- Audio Visualizer Canvas -->
                             <canvas id="visualizerCanvas"
-                                style="width: 100%; height: 60px; margin-top: 1rem; display: none;"></canvas>
+                                style="width: 100%; height: 100px; margin-top: 1rem; display: none;"></canvas>
                         </div>
                     </div>
                 </div>
@@ -362,10 +362,11 @@
                 const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
                 let x = 0;
 
-                // Raw Waveform (Volume vs. Samples)
+                // Raw Waveform (Volume vs. Samples) - Amplified 2.5x for more visible peaks
+                const amplify = 2.5; // Amplification factor
                 for (let i = 0; i < bufferLength; i++) {
-                    const v = dataArray[i] / 128.0;
-                    const y = v * vizCanvas.height / 2;
+                    const v = (dataArray[i] / 128.0 - 1) * amplify; // Center at 0, then amplify
+                    const y = (v + 1) * vizCanvas.height / 2; // Map back to canvas
                     if (i === 0) vizCtx.moveTo(x, y);
                     else vizCtx.lineTo(x, y);
                     x += sliceWidth;
