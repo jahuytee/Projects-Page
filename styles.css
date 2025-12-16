@@ -727,3 +727,25 @@ h1 {
     gap: 0.75rem;
     margin-bottom: 2rem;
 }
+
+/* Fade Up Animation */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Vinyl Gallery Hover Effect */
+.vinyl-item:hover {
+    transform: translateY(-5px) scale(1.05);
+}
+
+.vinyl-item img:hover {
+    box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+}

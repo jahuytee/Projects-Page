@@ -49,79 +49,126 @@
                             technologies.
                         </p>
 
-                        <div class="links">
+                        <!-- Beyond Engineering Section -->
+                        <div class="beyond-engineering"
+                            style="margin-top: 2rem; opacity: 0; animation: fadeUp 0.8s ease-out 0.6s forwards;">
+                            <h3 style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1rem;">
+                                <i class="fa-solid fa-heart" style="color: #ec4899;"></i> Beyond Engineering
+                            </h3>
+
+                            <!-- Hobbies Carousel -->
+                            <div class="hobbies-carousel"
+                                style="position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 1.5rem;">
+                                <div class="carousel-track" id="carouselTrack"
+                                    style="display: flex; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                                    <!-- Slide 1: Beach -->
+                                    <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                                        <img src="assets/images/hobbies/beach.png" alt="Beach"
+                                            style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px;">
+                                        <div class="slide-caption"
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.85)); border-radius: 0 0 12px 12px;">
+                                            <p style="color: white; margin: 0; font-size: 0.9rem;">Nothing beats calm
+                                                walks on the beach 🌊</p>
+                                        </div>
+                                    </div>
+                                    <!-- Slide 2: Music -->
+                                    <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                                        <img src="assets/images/hobbies/music.jpg" alt="Music"
+                                            style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px;">
+                                        <div class="slide-caption"
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.85)); border-radius: 0 0 12px 12px;">
+                                            <p style="color: white; margin: 0; font-size: 0.9rem;">Music explorer –
+                                                vinyl collector, concert-goer & lover of music analysis 🎵</p>
+                                        </div>
+                                    </div>
+                                    <!-- Slide 3: Poetry -->
+                                    <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                                        <img src="assets/images/hobbies/poetry.jpg" alt="Poetry"
+                                            style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px;">
+                                        <div class="slide-caption"
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.85)); border-radius: 0 0 12px 12px;">
+                                            <p style="color: white; margin: 0; font-size: 0.9rem;">Reading, writing &
+                                                enjoying poetry lounges in my free time ✨</p>
+                                        </div>
+                                    </div>
+                                    <!-- Slide 4: Traveling -->
+                                    <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                                        <img src="assets/images/hobbies/traveling.jpg" alt="Traveling"
+                                            style="width: 100%; height: 220px; object-fit: cover; border-radius: 12px;">
+                                        <div class="slide-caption"
+                                            style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.85)); border-radius: 0 0 12px 12px;">
+                                            <p style="color: white; margin: 0; font-size: 0.9rem;">Started traveling
+                                                since college – always exploring new places 🌍</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation Dots -->
+                                <div class="carousel-dots"
+                                    style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 0.75rem;">
+                                    <button class="dot active" data-index="0"
+                                        style="width: 8px; height: 8px; border-radius: 50%; border: none; background: white; cursor: pointer; transition: all 0.3s;"></button>
+                                    <button class="dot" data-index="1"
+                                        style="width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                                    <button class="dot" data-index="2"
+                                        style="width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                                    <button class="dot" data-index="3"
+                                        style="width: 8px; height: 8px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                                </div>
+                            </div>
+
+                            <!-- Vinyl Album Gallery -->
+                            <h4 style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                                <i class="fa-solid fa-record-vinyl" style="color: #a855f7;"></i> Favorite Vinyls
+                            </h4>
+                            <div class="vinyl-gallery"
+                                style="display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                                <div class="vinyl-item"
+                                    style="flex-shrink: 0; text-align: center; transition: transform 0.3s ease; cursor: pointer;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a0/Blonde_-_Frank_Ocean.jpeg"
+                                        alt="Blonde"
+                                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                        Blonde</p>
+                                </div>
+                                <div class="vinyl-item"
+                                    style="flex-shrink: 0; text-align: center; transition: transform 0.3s ease; cursor: pointer;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/2/28/Channel_ORANGE.jpg"
+                                        alt="Channel Orange"
+                                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                        Channel Orange</p>
+                                </div>
+                                <div class="vinyl-item"
+                                    style="flex-shrink: 0; text-align: center; transition: transform 0.3s ease; cursor: pointer;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b5/Tyler%2C_the_Creator_-_Igor.png/220px-Tyler%2C_the_Creator_-_Igor.png"
+                                        alt="IGOR"
+                                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                        IGOR</p>
+                                </div>
+                                <div class="vinyl-item"
+                                    style="flex-shrink: 0; text-align: center; transition: transform 0.3s ease; cursor: pointer;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png"
+                                        alt="OK Computer"
+                                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">OK
+                                        Computer</p>
+                                </div>
+                                <div class="vinyl-item"
+                                    style="flex-shrink: 0; text-align: center; transition: transform 0.3s ease; cursor: pointer;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/en/d/de/SZA_-_SOS.png" alt="SOS"
+                                        style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                                    <p style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">SOS
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="links" style="margin-top: 1.5rem;">
                             <a href="#projects" class="btn">View My Work</a>
                             <a href="mailto:contact@example.com" class="btn btn-outline">Contact Me</a>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Hobbies Section -->
-        <section id="hobbies" style="min-height: auto; padding: 2rem 0;">
-            <div class="glass-panel" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
-                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-primary);">
-                    <i class="fa-solid fa-heart" style="color: #ec4899;"></i> Beyond Engineering
-                </h3>
-
-                <!-- Carousel Container -->
-                <div class="hobbies-carousel" style="position: relative; overflow: hidden; border-radius: 16px;">
-                    <div class="carousel-track" id="carouselTrack"
-                        style="display: flex; transition: transform 0.5s ease-in-out;">
-                        <!-- Slide 1: Beach -->
-                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
-                            <img src="assets/images/hobbies/beach.png" alt="Beach"
-                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
-                            <div class="slide-caption"
-                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
-                                <p style="color: white; margin: 0; font-size: 1rem;">Nothing beats calm walks on the
-                                    beach 🌊</p>
-                            </div>
-                        </div>
-                        <!-- Slide 2: Music -->
-                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
-                            <img src="assets/images/hobbies/music.jpg" alt="Music"
-                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
-                            <div class="slide-caption"
-                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
-                                <p style="color: white; margin: 0; font-size: 1rem;">Music explorer – vinyl collector,
-                                    concert-goer & lover of music analysis 🎵</p>
-                            </div>
-                        </div>
-                        <!-- Slide 3: Poetry -->
-                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
-                            <img src="assets/images/hobbies/poetry.jpg" alt="Poetry"
-                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
-                            <div class="slide-caption"
-                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
-                                <p style="color: white; margin: 0; font-size: 1rem;">Reading, writing & enjoying poetry
-                                    lounges in my free time ✨</p>
-                            </div>
-                        </div>
-                        <!-- Slide 4: Traveling -->
-                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
-                            <img src="assets/images/hobbies/traveling.jpg" alt="Traveling"
-                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
-                            <div class="slide-caption"
-                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
-                                <p style="color: white; margin: 0; font-size: 1rem;">Started traveling since college –
-                                    always exploring new places 🌍</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Navigation Dots -->
-                    <div class="carousel-dots"
-                        style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
-                        <button class="dot active" data-index="0"
-                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: white; cursor: pointer; transition: all 0.3s;"></button>
-                        <button class="dot" data-index="1"
-                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
-                        <button class="dot" data-index="2"
-                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
-                        <button class="dot" data-index="3"
-                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
                     </div>
                 </div>
             </div>
