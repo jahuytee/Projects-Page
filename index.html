@@ -38,7 +38,7 @@
                         <img src="assets/images/profile.jpg" alt="Jason Tran" class="profile-img">
                     </div>
                     <div class="hero-text">
-                        <h1 class="glitch" data-text="Jason Tran">Jason Tran</h1>
+                        <h1 class="gradient-text" id="typedName"></h1>
                         <div class="education-block">
                             <h3>California Institute of Technology, Pasadena, CA</h3>
                             <p>B.S, Electrical Engineering (Minor: Environmental Science Engineering)</p>
@@ -140,7 +140,7 @@
                                         <p>Channel Orange</p>
                                     </div>
                                     <div class="vinyl-3d-item active" data-index="2">
-                                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/b5/Tyler%2C_the_Creator_-_Igor.png/220px-Tyler%2C_the_Creator_-_Igor.png"
+                                        <img src="https://upload.wikimedia.org/wikipedia/en/b/b5/Tyler%2C_the_Creator_-_Igor.png"
                                             alt="IGOR">
                                         <p>IGOR</p>
                                     </div>
@@ -150,9 +150,9 @@
                                         <p>OK Computer</p>
                                     </div>
                                     <div class="vinyl-3d-item" data-index="4">
-                                        <img src="https://upload.wikimedia.org/wikipedia/en/d/de/SZA_-_SOS.png"
-                                            alt="SOS">
-                                        <p>SOS</p>
+                                        <img src="https://upload.wikimedia.org/wikipedia/en/6/6d/Mazzy_Star-So_Tonight_That_I_Might_See.jpg"
+                                            alt="So Tonight That I Might See">
+                                        <p>So Tonight...</p>
                                     </div>
                                 </div>
                                 <!-- Navigation Arrows -->
@@ -245,6 +245,22 @@
             });
 
             updateVinylCarousel();
+
+            // Typewriter Effect
+            const typedElement = document.getElementById('typedName');
+            const textToType = 'Jason Tran';
+            let charIndex = 0;
+
+            function typeWriter() {
+                if (charIndex < textToType.length) {
+                    typedElement.textContent += textToType.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 120);
+                }
+            }
+
+            // Start typing after a short delay
+            setTimeout(typeWriter, 500);
         </script>
 
         <!-- Skills Section -->
@@ -497,8 +513,8 @@
         const ctx = canvas.getContext('2d');
 
         let particles = [];
-        const particleCount = 80;
-        const connectionDistance = 120;
+        const particleCount = 100;
+        const connectionDistance = 150;
         const colors = ['#38bdf8', '#818cf8', '#a855f7', '#22d3ee'];
 
         function resizeCanvas() {
@@ -512,9 +528,9 @@
                 this.y = Math.random() * canvas.height;
                 this.vx = (Math.random() - 0.5) * 0.8;
                 this.vy = (Math.random() - 0.5) * 0.8;
-                this.radius = Math.random() * 2 + 1;
+                this.radius = Math.random() * 3 + 2;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.5 + 0.3;
+                this.alpha = Math.random() * 0.6 + 0.4;
             }
 
             update() {
@@ -551,12 +567,12 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (distance < connectionDistance) {
-                        const opacity = (1 - distance / connectionDistance) * 0.3;
+                        const opacity = (1 - distance / connectionDistance) * 0.6;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
-                        ctx.lineWidth = 0.5;
+                        ctx.lineWidth = 1;
                         ctx.stroke();
                     }
                 }
