@@ -688,6 +688,12 @@ h1 {
 }
 
 /* Detail Page Specifics */
+.project-detail-container {
+    padding-top: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
 .detail-section {
     min-height: auto !important;
     padding: 2.5rem !important;
