@@ -838,7 +838,7 @@
 
         revealElements.forEach(el => revealObserver.observe(el));
 
-        // Circuit Animation for Experience Cards
+        // Circuit Animation for Experience Cards - PCB Style
         const experienceCards = document.querySelectorAll('.experience-card');
 
         experienceCards.forEach(card => {
@@ -850,91 +850,95 @@
             svg.setAttribute('viewBox', '0 0 100 100');
             svg.setAttribute('preserveAspectRatio', 'none');
 
-            // Add gradient definition
-            svg.innerHTML = `
-                <defs>
-                    <linearGradient id="circuitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#22d3ee"/>
-                        <stop offset="50%" style="stop-color:#a855f7"/>
-                        <stop offset="100%" style="stop-color:#e879f9"/>
-                    </linearGradient>
-                </defs>
-            `;
-
             card.appendChild(svg);
-
-            // Create spark element
-            const spark = document.createElement('div');
-            spark.classList.add('circuit-spark');
-            spark.style.left = '50%';
-            spark.style.top = '50%';
-            card.appendChild(spark);
 
             card.addEventListener('mouseenter', () => {
                 hoverTimer = setTimeout(() => {
-                    // Generate random circuit paths
-                    generateCircuitPaths(svg);
+                    generatePCBPattern(svg);
                     card.classList.add('circuit-active');
-                }, 1500); // 1.5 second delay
+                }, 1500);
             });
 
             card.addEventListener('mouseleave', () => {
                 clearTimeout(hoverTimer);
                 card.classList.remove('circuit-active');
-                // Clear paths after animation
-                const paths = svg.querySelectorAll('.circuit-wire, .circuit-node');
-                paths.forEach(p => p.remove());
+                // Clear paths after short delay for fade out
+                setTimeout(() => {
+                    const paths = svg.querySelectorAll('.circuit-wire, .circuit-node');
+                    paths.forEach(p => p.remove());
+                }, 500);
             });
         });
 
-        function generateCircuitPaths(svg) {
-            // Clear existing paths
-            const existingPaths = svg.querySelectorAll('.circuit-wire, .circuit-node');
-            existingPaths.forEach(p => p.remove());
+        function generatePCBPattern(svg) {
+            // Clear existing elements
+            svg.innerHTML = '';
 
-            const edges = ['top', 'bottom', 'left', 'right'];
-            const centerX = 50;
-            const centerY = 50;
+            // Generate 10 random PCB traces
+            for (let i = 0; i < 10; i++) {
+                const path = createPCBTrace();
+                svg.appendChild(path);
+            }
 
-            edges.forEach((edge, i) => {
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                path.classList.add('circuit-wire');
+            // Add random nodes/vias
+            for (let i = 0; i < 8; i++) {
+                const node = createNode(
+                    10 + Math.random() * 80,
+                    10 + Math.random() * 80,
+                    Math.random() > 0.5
+                );
+                svg.appendChild(node);
+            }
+        }
 
-                let startX, startY, midX, midY;
-                const offset = 20 + Math.random() * 60; // Random position along edge
+        function createPCBTrace() {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.classList.add('circuit-wire');
+            if (Math.random() > 0.6) path.classList.add('thin');
 
-                switch (edge) {
-                    case 'top':
-                        startX = offset; startY = 0;
-                        midX = startX; midY = 25 + Math.random() * 10;
-                        break;
-                    case 'bottom':
-                        startX = offset; startY = 100;
-                        midX = startX; midY = 75 - Math.random() * 10;
-                        break;
-                    case 'left':
-                        startX = 0; startY = offset;
-                        midX = 25 + Math.random() * 10; midY = startY;
-                        break;
-                    case 'right':
-                        startX = 100; startY = offset;
-                        midX = 75 - Math.random() * 10; midY = startY;
-                        break;
+            // Start from a random edge
+            let x, y;
+            const edge = Math.floor(Math.random() * 4);
+
+            switch (edge) {
+                case 0: x = Math.random() * 100; y = 0; break; // top
+                case 1: x = Math.random() * 100; y = 100; break; // bottom
+                case 2: x = 0; y = Math.random() * 100; break; // left
+                case 3: x = 100; y = Math.random() * 100; break; // right
+            }
+
+            // Create path with 2-4 right-angle segments
+            let d = `M ${x.toFixed(1)} ${y.toFixed(1)}`;
+            const segments = 2 + Math.floor(Math.random() * 3);
+            let horizontal = edge === 0 || edge === 1; // Start direction
+
+            for (let i = 0; i < segments; i++) {
+                const length = 15 + Math.random() * 35;
+
+                if (horizontal) {
+                    x += (Math.random() > 0.5 ? 1 : -1) * length;
+                    x = Math.max(5, Math.min(95, x));
+                } else {
+                    y += (Math.random() > 0.5 ? 1 : -1) * length;
+                    y = Math.max(5, Math.min(95, y));
                 }
 
-                // Create path with right-angle bends (circuit-like)
-                const d = `M ${startX} ${startY} L ${midX} ${midY} L ${centerX} ${centerY}`;
-                path.setAttribute('d', d);
-                svg.appendChild(path);
+                d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+                horizontal = !horizontal; // Alternate direction
+            }
 
-                // Add node at connection point
-                const node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                node.classList.add('circuit-node');
-                node.setAttribute('cx', centerX);
-                node.setAttribute('cy', centerY);
-                node.setAttribute('r', '2');
-                svg.appendChild(node);
-            });
+            path.setAttribute('d', d);
+            return path;
+        }
+
+        function createNode(x, y, filled) {
+            const node = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            node.classList.add('circuit-node');
+            if (filled) node.classList.add('filled');
+            node.setAttribute('cx', x.toFixed(1));
+            node.setAttribute('cy', y.toFixed(1));
+            node.setAttribute('r', filled ? '1.5' : '2.5');
+            return node;
         }
     </script>
 </body>

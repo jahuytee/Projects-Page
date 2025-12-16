@@ -936,7 +936,7 @@ h1 {
     transform: translateY(0);
 }
 
-/* Circuit Animation for Experience Cards */
+/* Circuit Animation for Experience Cards - PCB Style */
 .experience-card {
     position: relative;
     overflow: hidden;
@@ -949,39 +949,75 @@ h1 {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 10;
+    z-index: 1;
+    /* Behind text content */
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
 }
 
 .experience-card.circuit-active .circuit-overlay {
-    opacity: 1;
+    opacity: 0.15;
+    /* Very subtle, in background */
 }
 
 .circuit-wire {
     fill: none;
-    stroke: url(#circuitGradient);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    filter: drop-shadow(0 0 3px #22d3ee);
+    stroke: #d4af37;
+    /* Gold color */
+    stroke-width: 1.5;
+    stroke-linecap: square;
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+}
+
+.circuit-wire.thin {
+    stroke-width: 1;
+    stroke: rgba(255, 255, 255, 0.8);
 }
 
 .experience-card.circuit-active .circuit-wire {
-    animation: drawWire 1.5s ease-out forwards;
+    animation: drawWire 2s ease-out forwards;
 }
 
-.experience-card.circuit-active .circuit-wire:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
+/* Staggered delays for many wires */
 .experience-card.circuit-active .circuit-wire:nth-child(3) {
-    animation-delay: 0.4s;
+    animation-delay: 0.1s;
 }
 
 .experience-card.circuit-active .circuit-wire:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(6) {
+    animation-delay: 0.4s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(7) {
+    animation-delay: 0.5s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(8) {
     animation-delay: 0.6s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(9) {
+    animation-delay: 0.7s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(10) {
+    animation-delay: 0.8s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(11) {
+    animation-delay: 0.9s;
+}
+
+.experience-card.circuit-active .circuit-wire:nth-child(12) {
+    animation-delay: 1.0s;
 }
 
 @keyframes drawWire {
@@ -990,75 +1026,61 @@ h1 {
     }
 }
 
-/* Spark effect at connection point */
-.circuit-spark {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #22d3ee 0%, transparent 70%);
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
-    z-index: 15;
-}
-
-.experience-card.circuit-active .circuit-spark {
-    animation: sparkPulse 0.8s ease-out 1.8s forwards;
-}
-
-@keyframes sparkPulse {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0);
-    }
-
-    50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(2);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(3);
-    }
-}
-
-/* Circuit node dots */
+/* Circuit nodes/vias */
 .circuit-node {
-    fill: #22d3ee;
-    filter: drop-shadow(0 0 4px #22d3ee);
+    fill: none;
+    stroke: #d4af37;
+    stroke-width: 1;
     opacity: 0;
+}
+
+.circuit-node.filled {
+    fill: #d4af37;
 }
 
 .experience-card.circuit-active .circuit-node {
-    animation: nodeGlow 0.3s ease-out forwards;
+    animation: nodeAppear 0.3s ease-out forwards;
 }
 
-.experience-card.circuit-active .circuit-node:nth-child(1) {
+/* Staggered node appearances */
+.experience-card.circuit-active .circuit-node:nth-of-type(1) {
+    animation-delay: 0.5s;
+}
+
+.experience-card.circuit-active .circuit-node:nth-of-type(2) {
+    animation-delay: 0.7s;
+}
+
+.experience-card.circuit-active .circuit-node:nth-of-type(3) {
+    animation-delay: 0.9s;
+}
+
+.experience-card.circuit-active .circuit-node:nth-of-type(4) {
+    animation-delay: 1.1s;
+}
+
+.experience-card.circuit-active .circuit-node:nth-of-type(5) {
+    animation-delay: 1.3s;
+}
+
+.experience-card.circuit-active .circuit-node:nth-of-type(6) {
     animation-delay: 1.5s;
 }
 
-.experience-card.circuit-active .circuit-node:nth-child(2) {
+.experience-card.circuit-active .circuit-node:nth-of-type(7) {
     animation-delay: 1.7s;
 }
 
-.experience-card.circuit-active .circuit-node:nth-child(3) {
+.experience-card.circuit-active .circuit-node:nth-of-type(8) {
     animation-delay: 1.9s;
 }
 
-.experience-card.circuit-active .circuit-node:nth-child(4) {
-    animation-delay: 2.1s;
-}
-
-@keyframes nodeGlow {
+@keyframes nodeAppear {
     0% {
         opacity: 0;
-        transform: scale(0);
     }
 
     100% {
         opacity: 1;
-        transform: scale(1);
     }
 }
