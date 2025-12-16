@@ -126,30 +126,10 @@
                                 <i class="fa-solid fa-record-vinyl" style="color: #a855f7;"></i> Favorite Vinyls
                             </h4>
                             <div class="vinyl-carousel-container"
-                                style="position: relative; height: 140px; display: flex; align-items: center; justify-content: center; perspective: 1000px;">
+                                style="position: relative; height: 140px; display: flex; align-items: center; justify-content: center; perspective: 1000px; overflow: hidden; padding: 0 40px;">
                                 <div class="vinyl-carousel-track" id="vinylTrack"
-                                    style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.4s ease;">
-                                    <div class="vinyl-3d-item" data-index="0">
-                                        <img src="assets/images/hobbies/blonded.jpg" alt="Blonde">
-                                        <p>Blonde</p>
-                                    </div>
-                                    <div class="vinyl-3d-item" data-index="1">
-                                        <img src="assets/images/hobbies/channel orange.jpg" alt="Channel Orange">
-                                        <p>Channel Orange</p>
-                                    </div>
-                                    <div class="vinyl-3d-item active" data-index="2">
-                                        <img src="assets/images/hobbies/igor.jpg" alt="IGOR">
-                                        <p>IGOR</p>
-                                    </div>
-                                    <div class="vinyl-3d-item" data-index="3">
-                                        <img src="assets/images/hobbies/ok computer.png" alt="OK Computer">
-                                        <p>OK Computer</p>
-                                    </div>
-                                    <div class="vinyl-3d-item" data-index="4">
-                                        <img src="assets/images/hobbies/so tonight i might see.jpg"
-                                            alt="So Tonight That I Might See">
-                                        <p>So Tonight...</p>
-                                    </div>
+                                    style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                    <!-- Vinyl items are dynamically rendered by JavaScript -->
                                 </div>
                                 <!-- Navigation Arrows -->
                                 <button class="vinyl-nav vinyl-prev" onclick="moveVinylCarousel(-1)"
@@ -225,39 +205,56 @@
 
             startAutoPlay();
 
-            // Vinyl 3D Carousel
+            // Vinyl 3D Carousel - Infinite/Virtual Rendering
+            // All vinyl data stored in array
+            const vinyls = [
+                { img: 'assets/images/hobbies/blonded.jpg', title: 'Blonde', audio: 'assets/audio/blonde.mp3' },
+                { img: 'assets/images/hobbies/channel orange.jpg', title: 'Channel Orange', audio: 'assets/audio/channel_orange.mp3' },
+                { img: 'assets/images/hobbies/igor.jpg', title: 'IGOR', audio: 'assets/audio/igor.mp3' },
+                { img: 'assets/images/hobbies/ok computer.png', title: 'OK Computer', audio: 'assets/audio/ok_computer.mp3' },
+                { img: 'assets/images/hobbies/so tonight i might see.jpg', title: 'So Tonight...', audio: 'assets/audio/so_tonight.mp3' }
+            ];
+
             let vinylCurrentIndex = 2; // Start at center (IGOR)
-            const vinylItems = document.querySelectorAll('.vinyl-3d-item');
-            const vinylTotal = vinylItems.length;
+            const vinylTotal = vinyls.length;
+            const vinylTrack = document.getElementById('vinylTrack');
 
-            function updateVinylCarousel() {
-                vinylItems.forEach((item, index) => {
-                    item.classList.remove('active');
-                    if (index === vinylCurrentIndex) {
-                        item.classList.add('active');
-                    }
-                });
-            }
+            // Create a vinyl element
+            function createVinylElement(vinyl, isActive, displayIndex) {
+                const div = document.createElement('div');
+                div.className = 'vinyl-3d-item' + (isActive ? ' active' : '');
+                div.innerHTML = `<img src="${vinyl.img}" alt="${vinyl.title}"><p>${vinyl.title}</p>`;
 
-            function moveVinylCarousel(direction) {
-                vinylCurrentIndex = (vinylCurrentIndex + direction + vinylTotal) % vinylTotal;
-                updateVinylCarousel();
-
-                // Reorder items so active is in center visually
-                const track = document.getElementById('vinylTrack');
-                const offset = (vinylCurrentIndex - 2) * -85; // Shift based on index
-                track.style.transform = `translateX(${offset}px)`;
-            }
-
-            // Click on vinyl to select it
-            vinylItems.forEach((item, index) => {
-                item.addEventListener('click', () => {
-                    const diff = index - vinylCurrentIndex;
+                // Click to navigate to this item
+                div.addEventListener('click', () => {
+                    const diff = displayIndex - 2; // 2 is center position
                     if (diff !== 0) moveVinylCarousel(diff);
                 });
-            });
 
-            updateVinylCarousel();
+                return div;
+            }
+
+            // Render only 5 vinyls centered on current
+            function renderVinylCarousel() {
+                vinylTrack.innerHTML = '';
+
+                // Show 5 items: indices -2, -1, 0, +1, +2 relative to current
+                for (let offset = -2; offset <= 2; offset++) {
+                    const idx = (vinylCurrentIndex + offset + vinylTotal) % vinylTotal;
+                    const isActive = offset === 0;
+                    const vinyl = createVinylElement(vinyls[idx], isActive, offset + 2);
+                    vinylTrack.appendChild(vinyl);
+                }
+            }
+
+            // Move carousel (will be wrapped to stop audio when changing)
+            function moveVinylCarousel(direction) {
+                vinylCurrentIndex = (vinylCurrentIndex + direction + vinylTotal) % vinylTotal;
+                renderVinylCarousel();
+            }
+
+            // Initialize carousel
+            renderVinylCarousel();
 
             // Audio Player & Visualizer
             const playBtn = document.getElementById('playBtn');
@@ -300,18 +297,9 @@
                     analyser.fftSize = 4096; // Even higher resolution
                 }
 
-                // MP3 File Mapping
-                const audioFiles = [
-                    'assets/audio/blonde.mp3',
-                    'assets/audio/channel_orange.mp3',
-                    'assets/audio/igor.mp3',
-                    'assets/audio/ok_computer.mp3',
-                    'assets/audio/so_tonight.mp3'
-                ];
-
-                // Create Audio Element
+                // Create Audio Element using vinyl data
                 const audio = new Audio();
-                audio.src = audioFiles[vinylCurrentIndex];
+                audio.src = vinyls[vinylCurrentIndex].audio;
                 audio.crossOrigin = "anonymous";
                 audio.loop = true;
 
