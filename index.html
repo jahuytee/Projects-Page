@@ -38,7 +38,7 @@
                         <img src="assets/images/profile.jpg" alt="Jason Tran" class="profile-img">
                     </div>
                     <div class="hero-text">
-                        <h1 class="gradient-text" id="typedName"></h1>
+                        <h1 class="gradient-text">Jason Tran</h1>
                         <div class="education-block">
                             <h3>California Institute of Technology, Pasadena, CA</h3>
                             <p>B.S, Electrical Engineering (Minor: Environmental Science Engineering)</p>
@@ -245,33 +245,6 @@
             });
 
             updateVinylCarousel();
-
-            // Typewriter Effect
-            const typedElement = document.getElementById('typedName');
-            const textToType = 'Jason Tran';
-            let charIndex = 0;
-
-            function typeWriter() {
-                if (typedElement && charIndex < textToType.length) {
-                    typedElement.textContent += textToType.charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeWriter, 120);
-                } else if (typedElement && charIndex === 0) {
-                    // Fallback: show full name if typewriter fails
-                    typedElement.textContent = textToType;
-                }
-            }
-
-            // Start typing after a short delay
-            if (typedElement) {
-                setTimeout(typeWriter, 500);
-            } else {
-                // If element not found, try again when DOM is ready
-                document.addEventListener('DOMContentLoaded', () => {
-                    const el = document.getElementById('typedName');
-                    if (el) el.textContent = 'Jason Tran';
-                });
-            }
         </script>
 
         <!-- Skills Section -->
