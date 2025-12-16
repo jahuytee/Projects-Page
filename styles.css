@@ -751,48 +751,13 @@ h1 {
 }
 
 /* Gradient Text Animation */
-.gradient-text {
+/* Standard Hero Text */
+.hero-text h1 {
     font-size: 3rem;
     font-weight: 700;
-    background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7, #ec4899, #38bdf8);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientShift 4s linear infinite;
-    letter-spacing: 2px;
-    min-height: 3.5rem;
-}
-
-@keyframes gradientShift {
-    0% {
-        background-position: 0% center;
-    }
-
-    100% {
-        background-position: 200% center;
-    }
-}
-
-/* Typewriter Cursor */
-.gradient-text::after {
-    content: '|';
-    -webkit-text-fill-color: #38bdf8;
-    animation: blink 0.7s infinite;
-    margin-left: 2px;
-}
-
-@keyframes blink {
-
-    0%,
-    50% {
-        opacity: 1;
-    }
-
-    51%,
-    100% {
-        opacity: 0;
-    }
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
 }
 
 /* 3D Vinyl Carousel */
