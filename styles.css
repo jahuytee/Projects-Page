@@ -879,6 +879,7 @@ h1 {
 }
 
 .hero-text h1 {
-    color: #ffffff;
+    color: #ffffff !important;
+    font-size: 3rem !important;
     animation: glowPulse 3s ease-in-out infinite;
 }
