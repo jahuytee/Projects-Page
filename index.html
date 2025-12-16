@@ -388,9 +388,9 @@
 
         <!-- Skills Section -->
         <section id="skills">
-            <h2 class="section-title">My Skills</h2>
+            <h2 class="section-title reveal">My Skills</h2>
 
-            <div class="skills-grid">
+            <div class="skills-grid reveal-stagger">
                 <!-- Category 1 -->
                 <div class="glass-panel skill-card">
                     <i class="fa-solid fa-code skill-icon"></i>
@@ -436,8 +436,8 @@
 
         <!-- Professional Experience Section -->
         <section id="experience">
-            <h2 class="section-title">Professional Experience</h2>
-            <div class="experience-container">
+            <h2 class="section-title reveal">Professional Experience</h2>
+            <div class="experience-container reveal-stagger">
                 <!-- Experience Card 1: NASA JPL -->
                 <div class="glass-panel experience-card">
                     <div class="experience-content">
@@ -577,8 +577,8 @@
 
         <!-- Projects Section -->
         <section id="projects">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
+            <h2 class="section-title reveal">Featured Projects</h2>
+            <div class="projects-grid reveal-stagger">
                 <!-- Project 1 -->
                 <div class="glass-panel project-card">
                     <div class="project-image" style="background: linear-gradient(45deg, #10b981, #0ea5e9);">
@@ -661,8 +661,8 @@
 
         <!-- Contact Section -->
         <section id="contact">
-            <h2 class="section-title">Get In Touch</h2>
-            <div class="contact-grid">
+            <h2 class="section-title reveal">Get In Touch</h2>
+            <div class="contact-grid reveal-stagger">
                 <!-- Contact Info Bubble -->
                 <div class="glass-panel contact-info text-center">
                     <h3>Contact Info</h3>
@@ -821,6 +821,22 @@
             resizeCanvas();
             initParticles();
         });
+
+        // Scroll Reveal Animation using Intersection Observer
+        const revealElements = document.querySelectorAll('.reveal, .reveal-stagger');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, {
+            threshold: 0.15, // Trigger when 15% of element is visible
+            rootMargin: '0px 0px -50px 0px' // Slightly before fully in view
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
     </script>
 </body>
 
