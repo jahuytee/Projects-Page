@@ -956,8 +956,8 @@ h1 {
 }
 
 .experience-card.circuit-active .circuit-overlay {
-    opacity: 0.25;
-    /* More visible */
+    opacity: 0.15;
+    /* Subtle, in background */
 }
 
 .circuit-wire {

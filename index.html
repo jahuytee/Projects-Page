@@ -943,24 +943,30 @@
                 case 3: x = 100; y = Math.random() * 100; break; // right
             }
 
-            // Create path with 2-5 right-angle segments
+            // Create path with mixed segments: horizontal, vertical, and 45-degree angles
             let d = `M ${x.toFixed(1)} ${y.toFixed(1)}`;
             const segments = 2 + Math.floor(Math.random() * 4);
-            let horizontal = edge === 0 || edge === 1;
 
             for (let i = 0; i < segments; i++) {
-                const length = 10 + Math.random() * 30;
+                const length = 10 + Math.random() * 25;
+                const direction = Math.floor(Math.random() * 8); // 8 directions
 
-                if (horizontal) {
-                    x += (Math.random() > 0.5 ? 1 : -1) * length;
-                    x = Math.max(2, Math.min(98, x));
-                } else {
-                    y += (Math.random() > 0.5 ? 1 : -1) * length;
-                    y = Math.max(2, Math.min(98, y));
+                switch (direction) {
+                    case 0: x += length; break; // right
+                    case 1: x -= length; break; // left
+                    case 2: y += length; break; // down
+                    case 3: y -= length; break; // up
+                    case 4: x += length * 0.7; y += length * 0.7; break; // diagonal down-right
+                    case 5: x -= length * 0.7; y += length * 0.7; break; // diagonal down-left
+                    case 6: x += length * 0.7; y -= length * 0.7; break; // diagonal up-right
+                    case 7: x -= length * 0.7; y -= length * 0.7; break; // diagonal up-left
                 }
 
+                // Keep within bounds
+                x = Math.max(2, Math.min(98, x));
+                y = Math.max(2, Math.min(98, y));
+
                 d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
-                horizontal = !horizontal;
             }
 
             path.setAttribute('d', d);
