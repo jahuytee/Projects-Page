@@ -13,6 +13,8 @@
         rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for True Pitch Shifting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
 </head>
 
 <body>
@@ -165,11 +167,11 @@
                                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                                     <span
                                         style="font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px;">Pitch
-                                        Control</span>
+                                        (Semitones)</span>
                                     <span id="pitchValue"
-                                        style="font-size: 0.85rem; color: #a855f7; font-weight: 600;">1.00x</span>
+                                        style="font-size: 0.85rem; color: #a855f7; font-weight: 600;">0</span>
                                 </div>
-                                <input type="range" id="pitchSlider" min="0.5" max="2.0" step="0.05" value="1.0"
+                                <input type="range" id="pitchSlider" min="-12" max="12" step="1" value="0"
                                     class="pitch-slider">
                             </div>
                         </div>
@@ -275,10 +277,9 @@
             const vizCanvas = document.getElementById('visualizerCanvas');
             const vizCtx = vizCanvas.getContext('2d');
 
-            let audioContext;
             let analyser;
-            let source;
-            let currentAudio;
+            let tonePlayer;
+            let pitchShift;
             let isPlaying = false;
             let animationId;
 
@@ -294,39 +295,32 @@
             }
 
             function startAudio() {
-                // Initialize Audio Context on user gesture
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    analyser = audioContext.createAnalyser();
+                // Initialize Tone.js context on user gesture
+                Tone.start();
+
+                // Create Tone.js player
+                tonePlayer = new Tone.Player({
+                    url: vinyls[vinylCurrentIndex].audio,
+                    loop: true,
+                    autostart: false
+                });
+
+                // Create pitch shift effect (true pitch shifting without speed change)
+                pitchShift = new Tone.PitchShift(0); // Start at 0 semitones
+
+                // Create analyser for visualization (connects to Web Audio API analyser)
+                if (!analyser) {
+                    analyser = Tone.context.createAnalyser();
                     analyser.fftSize = 4096;
                 }
 
-                // Create Audio Element using vinyl data
-                currentAudio = new Audio();
-                currentAudio.src = vinyls[vinylCurrentIndex].audio;
-                currentAudio.loop = true;
+                // Connect: Player -> PitchShift -> Analyser -> Destination
+                tonePlayer.connect(pitchShift);
+                pitchShift.connect(analyser);
+                Tone.connect(analyser, Tone.Destination);
 
-                // Create Source from Audio Element
-                const sourceNode = audioContext.createMediaElementSource(currentAudio);
-
-                // Connect Graph
-                const gainNode = audioContext.createGain();
-                gainNode.gain.value = 0.5;
-
-                sourceNode.connect(gainNode);
-                gainNode.connect(analyser);
-                analyser.connect(audioContext.destination);
-
-                currentAudio.play().catch(e => console.log('Playback failed:', e));
-
-                // Store stop function
-                source = {
-                    stop: () => {
-                        currentAudio.pause();
-                        currentAudio.src = '';
-                        sourceNode.disconnect();
-                    }
-                };
+                // Start playback when loaded
+                tonePlayer.autostart = true;
 
                 // UI Updates - Show pitch control
                 isPlaying = true;
@@ -336,25 +330,30 @@
                 document.getElementById('pitchControl').style.display = 'block';
                 document.querySelector('.vinyl-3d-item.active img').style.animation = 'spin 4s linear infinite';
 
-                // Connect pitch slider
+                // Connect pitch slider (semitones: -12 to +12)
                 const pitchSlider = document.getElementById('pitchSlider');
-                const pitchValue = document.getElementById('pitchValue');
-                pitchSlider.value = 1.0;
-                pitchValue.textContent = '1.0x';
+                const pitchValueDisplay = document.getElementById('pitchValue');
+                pitchSlider.value = 0;
+                pitchValueDisplay.textContent = '0';
 
                 pitchSlider.oninput = function () {
-                    currentAudio.playbackRate = parseFloat(this.value);
-                    pitchValue.textContent = parseFloat(this.value).toFixed(2) + 'x';
+                    const semitones = parseInt(this.value);
+                    pitchShift.pitch = semitones;
+                    pitchValueDisplay.textContent = (semitones > 0 ? '+' : '') + semitones;
                 };
 
                 drawVisualizer();
             }
 
             function stopAudio() {
-                if (source) {
-                    source.stop();
-                    source = null;
-                    currentAudio = null;
+                if (tonePlayer) {
+                    tonePlayer.stop();
+                    tonePlayer.dispose();
+                    tonePlayer = null;
+                }
+                if (pitchShift) {
+                    pitchShift.dispose();
+                    pitchShift = null;
                 }
 
                 // UI Updates - Hide pitch control
