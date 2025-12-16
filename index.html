@@ -874,27 +874,63 @@
             // Clear existing elements
             svg.innerHTML = '';
 
-            // Generate 18 random PCB traces (more density)
-            for (let i = 0; i < 18; i++) {
+            // Generate 35 random PCB traces (dense like real PCB)
+            for (let i = 0; i < 35; i++) {
                 const path = createPCBTrace();
                 svg.appendChild(path);
             }
 
+            // Add horizontal parallel trace groups (like bus lines)
+            for (let i = 0; i < 4; i++) {
+                const y = 15 + i * 20 + Math.random() * 10;
+                for (let j = 0; j < 3; j++) {
+                    const path = createHorizontalTrace(y + j * 2);
+                    svg.appendChild(path);
+                }
+            }
+
+            // Add vertical parallel trace groups
+            for (let i = 0; i < 3; i++) {
+                const x = 20 + i * 25 + Math.random() * 10;
+                for (let j = 0; j < 2; j++) {
+                    const path = createVerticalTrace(x + j * 2);
+                    svg.appendChild(path);
+                }
+            }
+
             // Add random nodes/vias
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 20; i++) {
                 const node = createNode(
-                    10 + Math.random() * 80,
-                    10 + Math.random() * 80,
-                    Math.random() > 0.5
+                    5 + Math.random() * 90,
+                    5 + Math.random() * 90,
+                    Math.random() > 0.4
                 );
                 svg.appendChild(node);
             }
         }
 
+        function createHorizontalTrace(y) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.classList.add('circuit-wire', 'thin');
+            const startX = Math.random() * 30;
+            const endX = 70 + Math.random() * 30;
+            path.setAttribute('d', `M ${startX} ${y} L ${endX} ${y}`);
+            return path;
+        }
+
+        function createVerticalTrace(x) {
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.classList.add('circuit-wire', 'thin');
+            const startY = Math.random() * 30;
+            const endY = 70 + Math.random() * 30;
+            path.setAttribute('d', `M ${x} ${startY} L ${x} ${endY}`);
+            return path;
+        }
+
         function createPCBTrace() {
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             path.classList.add('circuit-wire');
-            if (Math.random() > 0.6) path.classList.add('thin');
+            if (Math.random() > 0.5) path.classList.add('thin');
 
             // Start from a random edge
             let x, y;
@@ -907,24 +943,24 @@
                 case 3: x = 100; y = Math.random() * 100; break; // right
             }
 
-            // Create path with 2-4 right-angle segments
+            // Create path with 2-5 right-angle segments
             let d = `M ${x.toFixed(1)} ${y.toFixed(1)}`;
-            const segments = 2 + Math.floor(Math.random() * 3);
-            let horizontal = edge === 0 || edge === 1; // Start direction
+            const segments = 2 + Math.floor(Math.random() * 4);
+            let horizontal = edge === 0 || edge === 1;
 
             for (let i = 0; i < segments; i++) {
-                const length = 15 + Math.random() * 35;
+                const length = 10 + Math.random() * 30;
 
                 if (horizontal) {
                     x += (Math.random() > 0.5 ? 1 : -1) * length;
-                    x = Math.max(5, Math.min(95, x));
+                    x = Math.max(2, Math.min(98, x));
                 } else {
                     y += (Math.random() > 0.5 ? 1 : -1) * length;
-                    y = Math.max(5, Math.min(95, y));
+                    y = Math.max(2, Math.min(98, y));
                 }
 
                 d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
-                horizontal = !horizontal; // Alternate direction
+                horizontal = !horizontal;
             }
 
             path.setAttribute('d', d);
@@ -937,7 +973,7 @@
             if (filled) node.classList.add('filled');
             node.setAttribute('cx', x.toFixed(1));
             node.setAttribute('cy', y.toFixed(1));
-            node.setAttribute('r', filled ? '1.5' : '2.5');
+            node.setAttribute('r', filled ? '1' : '1.5');
             return node;
         }
     </script>

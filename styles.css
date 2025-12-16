@@ -956,18 +956,20 @@ h1 {
 }
 
 .experience-card.circuit-active .circuit-overlay {
-    opacity: 0.15;
-    /* Very subtle, in background */
+    opacity: 0.25;
+    /* More visible */
 }
 
 .circuit-wire {
     fill: none;
     stroke: #cd7f32;
     /* Copper/orange - real PCB color */
-    stroke-width: 0.8;
+    stroke-width: 0.6;
     stroke-linecap: square;
     stroke-dasharray: 500;
     stroke-dashoffset: 500;
+    filter: drop-shadow(0 0 1px rgba(205, 127, 50, 0.8));
+    /* Subtle copper glow */
 }
 
 .circuit-wire.thin {
