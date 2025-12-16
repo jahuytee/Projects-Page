@@ -157,6 +157,15 @@
                             <!-- Audio Visualizer Canvas -->
                             <canvas id="visualizerCanvas"
                                 style="width: 100%; height: 100px; margin-top: 1rem; display: none;"></canvas>
+
+                            <!-- Pitch Control Slider -->
+                            <div id="pitchControl" style="display: none; margin-top: 0.5rem; text-align: center;">
+                                <label style="font-size: 0.75rem; color: var(--text-secondary);">
+                                    Pitch: <span id="pitchValue">1.0x</span>
+                                </label>
+                                <input type="range" id="pitchSlider" min="0.5" max="2.0" step="0.05" value="1.0"
+                                    style="width: 100%; cursor: pointer; accent-color: #a855f7;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -263,6 +272,7 @@
             let audioContext;
             let analyser;
             let source;
+            let currentAudio;
             let isPlaying = false;
             let animationId;
 
@@ -282,46 +292,54 @@
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 4096; // Even higher resolution
+                    analyser.fftSize = 4096;
                 }
 
                 // Create Audio Element using vinyl data
-                const audio = new Audio();
-                audio.src = vinyls[vinylCurrentIndex].audio;
-                // Note: crossOrigin removed to allow file:// loading
-                // Visualizer requires CORS, so you need a local server for full functionality
-                audio.loop = true;
+                currentAudio = new Audio();
+                currentAudio.src = vinyls[vinylCurrentIndex].audio;
+                currentAudio.loop = true;
 
                 // Create Source from Audio Element
-                const sourceNode = audioContext.createMediaElementSource(audio);
+                const sourceNode = audioContext.createMediaElementSource(currentAudio);
 
                 // Connect Graph
                 const gainNode = audioContext.createGain();
-                gainNode.gain.value = 0.5; // Audio file volume
+                gainNode.gain.value = 0.5;
 
                 sourceNode.connect(gainNode);
-
-                // Direct connection to analyser (No filtering = Raw Waveform)
                 gainNode.connect(analyser);
                 analyser.connect(audioContext.destination);
 
-                audio.play().catch(e => console.log('Playback failed:', e));
+                currentAudio.play().catch(e => console.log('Playback failed:', e));
 
                 // Store stop function
                 source = {
                     stop: () => {
-                        audio.pause();
-                        audio.src = '';
-                        sourceNode.disconnect(); // Clean up graph
+                        currentAudio.pause();
+                        currentAudio.src = '';
+                        sourceNode.disconnect();
                     }
                 };
 
-                // UI Updates
+                // UI Updates - Show pitch control
                 isPlaying = true;
                 playIcon.classList.remove('fa-play');
                 playIcon.classList.add('fa-pause');
                 vizCanvas.style.display = 'block';
+                document.getElementById('pitchControl').style.display = 'block';
                 document.querySelector('.vinyl-3d-item.active img').style.animation = 'spin 4s linear infinite';
+
+                // Connect pitch slider
+                const pitchSlider = document.getElementById('pitchSlider');
+                const pitchValue = document.getElementById('pitchValue');
+                pitchSlider.value = 1.0;
+                pitchValue.textContent = '1.0x';
+
+                pitchSlider.oninput = function () {
+                    currentAudio.playbackRate = parseFloat(this.value);
+                    pitchValue.textContent = parseFloat(this.value).toFixed(2) + 'x';
+                };
 
                 drawVisualizer();
             }
@@ -330,14 +348,16 @@
                 if (source) {
                     source.stop();
                     source = null;
+                    currentAudio = null;
                 }
 
-                // UI Updates
+                // UI Updates - Hide pitch control
                 isPlaying = false;
                 playIcon.classList.remove('fa-pause');
                 playIcon.classList.add('fa-play');
                 cancelAnimationFrame(animationId);
                 vizCanvas.style.display = 'none';
+                document.getElementById('pitchControl').style.display = 'none';
                 document.querySelector('.vinyl-3d-item.active img').style.animation = 'none';
             }
 
