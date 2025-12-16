@@ -271,12 +271,6 @@
             let source;
             let isPlaying = false;
             let animationId;
-            let visualizerMode = 0; // 0=Liquid, 1=Spectrum, 2=Raw
-
-            // Toggle Visualizer Mode on click
-            vizCanvas.addEventListener('click', () => {
-                visualizerMode = (visualizerMode + 1) % 3;
-            });
 
 
             // Show play button when carousel is interacted with
@@ -328,20 +322,11 @@
                 const gainNode = audioContext.createGain();
                 gainNode.gain.value = 0.5; // Audio file volume
 
-                // Create Low Pass Filter (for visualizer only)
-                // This makes the wave look smoother/more sinusoidal by removing jagged high freqs
-                const filter = audioContext.createBiquadFilter();
-                filter.type = "lowpass";
-                filter.frequency.value = 150; // Cutoff at 150Hz (Bass only)
-
                 sourceNode.connect(gainNode);
 
-                // Path 1: Ears (Full Fidelity)
-                gainNode.connect(audioContext.destination);
-
-                // Path 2: Eyes (Smoothed)
-                gainNode.connect(filter);
-                filter.connect(analyser);
+                // Direct connection to analyser (No filtering = Raw Waveform)
+                gainNode.connect(analyser);
+                analyser.connect(audioContext.destination);
 
                 audio.play().catch(e => console.log('Playback failed:', e));
 
@@ -387,75 +372,33 @@
                 vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
 
                 const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteTimeDomainData(dataArray);
 
-                // --- MODE 0 & 2: Time Domain (Waveforms) ---
-                if (visualizerMode === 0 || visualizerMode === 2) {
-                    const dataArray = new Uint8Array(bufferLength);
-                    analyser.getByteTimeDomainData(dataArray);
+                // Gradient for Wave
+                const gradient = vizCtx.createLinearGradient(0, 0, vizCanvas.width, 0);
+                gradient.addColorStop(0, '#22d3ee');
+                gradient.addColorStop(0.5, '#a855f7');
+                gradient.addColorStop(1, '#e879f9');
 
-                    // Gradient for Waves
-                    const gradient = vizCtx.createLinearGradient(0, 0, vizCanvas.width, 0);
-                    gradient.addColorStop(0, '#22d3ee');
-                    gradient.addColorStop(0.5, '#a855f7');
-                    gradient.addColorStop(1, '#e879f9');
+                vizCtx.lineWidth = 2;
+                vizCtx.strokeStyle = gradient;
+                vizCtx.beginPath();
 
-                    vizCtx.lineWidth = visualizerMode === 0 ? 3 : 2;
-                    vizCtx.strokeStyle = gradient;
-                    vizCtx.beginPath();
+                const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
+                let x = 0;
 
-                    const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
-                    let x = 0;
-
-                    if (visualizerMode === 0) {
-                        // MODE 0: Liquid (Quadratic Bezier Smoothing)
-                        vizCtx.moveTo(0, dataArray[0] / 128.0 * vizCanvas.height / 2);
-                        for (let i = 0; i < bufferLength - 1; i++) {
-                            const v = dataArray[i] / 128.0;
-                            const y = v * vizCanvas.height / 2;
-                            const nextY = (dataArray[i + 1] / 128.0) * vizCanvas.height / 2;
-                            const nextX = x + sliceWidth;
-
-                            const cpX = (x + nextX) / 2;
-                            const cpY = (y + nextY) / 2;
-                            vizCtx.quadraticCurveTo(x, y, cpX, cpY);
-                            x = nextX;
-                        }
-                    } else {
-                        // MODE 2: Raw (Linear connection)
-                        for (let i = 0; i < bufferLength; i++) {
-                            const v = dataArray[i] / 128.0;
-                            const y = v * vizCanvas.height / 2;
-                            if (i === 0) vizCtx.moveTo(x, y);
-                            else vizCtx.lineTo(x, y);
-                            x += sliceWidth;
-                        }
-                    }
-
-                    vizCtx.lineTo(vizCanvas.width, vizCanvas.height / 2);
-                    vizCtx.stroke();
+                // Raw Waveform (Volume vs. Samples)
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * vizCanvas.height / 2;
+                    if (i === 0) vizCtx.moveTo(x, y);
+                    else vizCtx.lineTo(x, y);
+                    x += sliceWidth;
                 }
-                // --- MODE 1: Frequency Domain (Spectrum Bars) ---
-                else if (visualizerMode === 1) {
-                    const dataArray = new Uint8Array(bufferLength);
-                    analyser.getByteFrequencyData(dataArray); // Use Frequency Data
 
-                    const barWidth = (vizCanvas.width / bufferLength) * 2.5;
-                    let barHeight;
-                    let x = 0;
-
-                    for (let i = 0; i < bufferLength; i++) {
-                        barHeight = dataArray[i] / 2; // Scale down
-
-                        // Rainbow bars based on frequency
-                        const hue = i * 2 + 180; // Start at Cyan (180)
-                        vizCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-
-                        // Center aligned bars for cool feel
-                        vizCtx.fillRect(x, (vizCanvas.height - barHeight) / 2, barWidth, barHeight);
-
-                        x += barWidth + 1;
-                    }
-                }
+                vizCtx.lineTo(vizCanvas.width, vizCanvas.height / 2);
+                vizCtx.stroke();
 
                 animationId = requestAnimationFrame(drawVisualizer);
             }
