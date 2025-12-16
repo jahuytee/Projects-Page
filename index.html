@@ -285,7 +285,8 @@
                 // Create Audio Element using vinyl data
                 const audio = new Audio();
                 audio.src = vinyls[vinylCurrentIndex].audio;
-                audio.crossOrigin = "anonymous";
+                // Note: crossOrigin removed to allow file:// loading
+                // Visualizer requires CORS, so you need a local server for full functionality
                 audio.loop = true;
 
                 // Create Source from Audio Element
