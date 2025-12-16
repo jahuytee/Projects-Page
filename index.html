@@ -874,14 +874,14 @@
             // Clear existing elements
             svg.innerHTML = '';
 
-            // Generate 10 random PCB traces
-            for (let i = 0; i < 10; i++) {
+            // Generate 18 random PCB traces (more density)
+            for (let i = 0; i < 18; i++) {
                 const path = createPCBTrace();
                 svg.appendChild(path);
             }
 
             // Add random nodes/vias
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 12; i++) {
                 const node = createNode(
                     10 + Math.random() * 80,
                     10 + Math.random() * 80,

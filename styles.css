@@ -962,17 +962,18 @@ h1 {
 
 .circuit-wire {
     fill: none;
-    stroke: #d4af37;
-    /* Gold color */
-    stroke-width: 1.5;
+    stroke: #cd7f32;
+    /* Copper/orange - real PCB color */
+    stroke-width: 0.8;
     stroke-linecap: square;
     stroke-dasharray: 500;
     stroke-dashoffset: 500;
 }
 
 .circuit-wire.thin {
-    stroke-width: 1;
-    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 0.5;
+    stroke: #b87333;
+    /* Slightly darker copper */
 }
 
 .experience-card.circuit-active .circuit-wire {
@@ -1029,13 +1030,13 @@ h1 {
 /* Circuit nodes/vias */
 .circuit-node {
     fill: none;
-    stroke: #d4af37;
-    stroke-width: 1;
+    stroke: #cd7f32;
+    stroke-width: 0.5;
     opacity: 0;
 }
 
 .circuit-node.filled {
-    fill: #d4af37;
+    fill: #cd7f32;
 }
 
 .experience-card.circuit-active .circuit-node {
