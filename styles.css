@@ -885,5 +885,5 @@ h1 {
 
 /* Beyond Engineering Section */
 .beyond-engineering {
-    max-width: 600px;
+    min-height: 400px;
 }
