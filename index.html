@@ -58,6 +58,116 @@
             </div>
         </section>
 
+        <!-- Hobbies Section -->
+        <section id="hobbies" style="min-height: auto; padding: 2rem 0;">
+            <div class="glass-panel" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--text-primary);">
+                    <i class="fa-solid fa-heart" style="color: #ec4899;"></i> Beyond Engineering
+                </h3>
+
+                <!-- Carousel Container -->
+                <div class="hobbies-carousel" style="position: relative; overflow: hidden; border-radius: 16px;">
+                    <div class="carousel-track" id="carouselTrack"
+                        style="display: flex; transition: transform 0.5s ease-in-out;">
+                        <!-- Slide 1: Beach -->
+                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                            <img src="assets/images/hobbies/beach.png" alt="Beach"
+                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
+                            <div class="slide-caption"
+                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
+                                <p style="color: white; margin: 0; font-size: 1rem;">Nothing beats calm walks on the
+                                    beach 🌊</p>
+                            </div>
+                        </div>
+                        <!-- Slide 2: Music -->
+                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                            <img src="assets/images/hobbies/music.jpg" alt="Music"
+                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
+                            <div class="slide-caption"
+                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
+                                <p style="color: white; margin: 0; font-size: 1rem;">Music explorer – vinyl collector,
+                                    concert-goer & lover of music analysis 🎵</p>
+                            </div>
+                        </div>
+                        <!-- Slide 3: Poetry -->
+                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                            <img src="assets/images/hobbies/poetry.jpg" alt="Poetry"
+                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
+                            <div class="slide-caption"
+                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
+                                <p style="color: white; margin: 0; font-size: 1rem;">Reading, writing & enjoying poetry
+                                    lounges in my free time ✨</p>
+                            </div>
+                        </div>
+                        <!-- Slide 4: Traveling -->
+                        <div class="carousel-slide" style="min-width: 100%; position: relative;">
+                            <img src="assets/images/hobbies/traveling.jpg" alt="Traveling"
+                                style="width: 100%; height: 300px; object-fit: cover; border-radius: 12px;">
+                            <div class="slide-caption"
+                                style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(0,0,0,0.8)); border-radius: 0 0 12px 12px;">
+                                <p style="color: white; margin: 0; font-size: 1rem;">Started traveling since college –
+                                    always exploring new places 🌍</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Dots -->
+                    <div class="carousel-dots"
+                        style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="dot active" data-index="0"
+                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: white; cursor: pointer; transition: all 0.3s;"></button>
+                        <button class="dot" data-index="1"
+                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                        <button class="dot" data-index="2"
+                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                        <button class="dot" data-index="3"
+                            style="width: 10px; height: 10px; border-radius: 50%; border: none; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // Hobbies Carousel
+            const track = document.getElementById('carouselTrack');
+            const dots = document.querySelectorAll('.dot');
+            let currentIndex = 0;
+            const totalSlides = 4;
+            let autoPlay;
+
+            function goToSlide(index) {
+                currentIndex = index;
+                track.style.transform = `translateX(-${index * 100}%)`;
+                dots.forEach((dot, i) => {
+                    dot.style.background = i === index ? 'white' : 'rgba(255,255,255,0.4)';
+                });
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                goToSlide(currentIndex);
+            }
+
+            // Auto-rotate every 4 seconds
+            function startAutoPlay() {
+                autoPlay = setInterval(nextSlide, 4000);
+            }
+
+            // Pause on hover
+            const carousel = document.querySelector('.hobbies-carousel');
+            carousel.addEventListener('mouseenter', () => clearInterval(autoPlay));
+            carousel.addEventListener('mouseleave', startAutoPlay);
+
+            // Dot navigation
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    goToSlide(parseInt(dot.dataset.index));
+                });
+            });
+
+            startAutoPlay();
+        </script>
+
         <!-- Skills Section -->
         <section id="skills">
             <h2 class="section-title">My Skills</h2>
