@@ -299,36 +299,42 @@
                     analyser.fftSize = 256; // Defines resolution
                 }
 
-                // Create Synth Tone (Oscillator)
-                // In future: load mp3 file here using Audio element
-                const osc = audioContext.createOscillator();
-                osc.type = 'sine';
+                // MP3 File Mapping
+                const audioFiles = [
+                    'assets/audio/blonde.mp3',
+                    'assets/audio/channel_orange.mp3',
+                    'assets/audio/igor.mp3',
+                    'assets/audio/ok_computer.mp3',
+                    'assets/audio/so_tonight.mp3'
+                ];
 
-                // Random frequency based on current vinyl to make it interesting
-                // Blonde=0, Channel=1, Igor=2, OK=3, Mazzy=4
-                const baseFreq = 220 + (vinylCurrentIndex * 50);
-                osc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+                // Create Audio Element
+                const audio = new Audio();
+                audio.src = audioFiles[vinylCurrentIndex];
+                audio.crossOrigin = "anonymous";
+                audio.loop = true;
 
-                // Add an LFO (Low Frequency Oscillator) to make it wobble/interesting
-                const lfo = audioContext.createOscillator();
-                lfo.type = 'sine';
-                lfo.frequency.value = 2; // 2Hz wobble
-                const lfoGain = audioContext.createGain();
-                lfoGain.gain.value = 50;
-                lfo.connect(lfoGain);
-                lfoGain.connect(osc.frequency);
-                lfo.start();
+                // Create Source from Audio Element
+                const sourceNode = audioContext.createMediaElementSource(audio);
 
-                // Gain node for volume control
+                // Connect Graph
                 const gainNode = audioContext.createGain();
-                gainNode.gain.value = 0.1; // Keep it quiet
+                gainNode.gain.value = 0.5; // Audio file volume
 
-                osc.connect(gainNode);
+                sourceNode.connect(gainNode);
                 gainNode.connect(analyser);
                 analyser.connect(audioContext.destination);
 
-                osc.start();
-                source = { stop: () => { osc.stop(); lfo.stop(); } }; // Mock source object
+                audio.play().catch(e => console.log('Playback failed:', e));
+
+                // Store stop function
+                source = {
+                    stop: () => {
+                        audio.pause();
+                        audio.src = '';
+                        sourceNode.disconnect(); // Clean up graph
+                    }
+                };
 
                 // UI Updates
                 isPlaying = true;
