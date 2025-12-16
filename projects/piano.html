@@ -20,8 +20,6 @@
             </div>
             <div class="header-main">
                 <h1>Voltage-to-Frequency Piano</h1>
-                <a href="../assets/documents/EE45_Progress_report_1 (4).pdf" target="_blank" class="btn btn-download"><i
-                        class="fa-solid fa-file-pdf"></i> View Full Report</a>
             </div>
             <div class="detail-meta">
                 <span><i class="fa-regular fa-calendar"></i> Fall 2024</span>
@@ -35,43 +33,182 @@
         <div class="detail-grid">
 
             <!-- Description & Logic -->
+            <!-- Introduction -->
             <section class="detail-section glass-panel">
-                <h2>Project Overview</h2>
-                <div class="overview-content">
-                    <div class="project-showcase">
-                        <!-- Temporary Placeholder Image -->
-                        <div class="placeholder-img"
-                            style="background: linear-gradient(135deg, #f59e0b, #0f172a); height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fa-solid fa-music" style="font-size: 5rem; color: rgba(255,255,255,0.2);"></i>
-                        </div>
-                    </div>
+                <h2>1. Introduction</h2>
+                <div class="text-content">
+                    <p>
+                        This project focuses on building an electronic piano using analog components. The design
+                        allows us to play 12 musical notes across a single octave, from A4 (440 Hz) to A5 (880 Hz).
+                        The core idea is that each button on the keyboard produces a unique voltage, and that
+                        voltage determines the pitch of the sound.
+                    </p>
+                    <p>
+                        The design assumes that only one button is pressed at a time. This simplifies both the
+                        hardware and the logic, and it makes the system easier to test. The range of notes was
+                        chosen based on what the circuit can generate reliably, and the values for each component
+                        were selected to keep the output stable and within the right frequency range.
+                    </p>
+                </div>
+            </section>
 
-                    <div class="placeholder-text-block" style="color: var(--text-secondary); line-height: 1.8;">
-                        <p style="margin-bottom: 1rem;">
-                            This project involved the design and construction of an analog voltage-to-frequency
-                            converter to simulate a musical instrument.
-                            The system maps analog input voltages to specific frequency outputs, mimicking the behavior
-                            of piano keys.
+            <!-- System Architecture -->
+            <section class="detail-section glass-panel">
+                <h2>2. System Architecture / Block Diagram</h2>
+                <div class="text-content">
+                    <p>
+                        The system includes five main parts. First is the set of push-buttons, which acts as the
+                        interface for playing notes. Each button is connected to a pin of an arduino micro that is
+                        connected to the MCP4725 Digital to Analog Converter breakout board. The Vout of the
+                        DAC, regulated through the arduino, goes into a voltage-to-frequency converter, which turns
+                        it into a waveform with a corresponding frequency. From there the signal passes through an
+                        audio amplifier and then into a speaker, which produces the sound.
+                    </p>
+
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/piano_block_diagram.png" alt="System Block Diagram"
+                            style="width: 100%; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 1: Block diagram of the full system. Each button generates a voltage corresponding to
+                            a
+                            musical note, which is converted into a frequency, amplified, and played through a speaker.
                         </p>
-                        <p style="margin-bottom: 1rem;">
-                            <strong>Key Highlights:</strong>
-                        </p>
-                        <ul class="detail-list">
-                            <li>Designed a voltage-controlled oscillator (VCO) to generate variable frequency waveforms
-                                based on input voltage.</li>
-                            <li>Implemented signal conditioning circuits to ensure stable and accurate frequency output
-                                for musical notes.</li>
-                            <li>Simulated circuit behavior using LTSpice to verify frequency response and transient
-                                characteristics before hardware implementation.</li>
-                            <li>Built and tested the physical circuit, fine-tuning component values to minimize pitch
-                                drift and signal distortion.</li>
-                        </ul>
                     </div>
                 </div>
             </section>
 
+            <!-- Theoretical Analysis -->
+            <section class="detail-section glass-panel">
+                <h2>3. Theoretical Analysis</h2>
+                <div class="text-content">
+                    <h3>Key Input Interface and DAC</h3>
+                    <p>
+                        While our original design at first implemented a simple resistor ladder as the DAC, we
+                        pivoted to a more integrated approach by using an Arduino Micro board interfaced with a
+                        separate MCP4725 DAC chip. The primary reason we pivoted is because the digital DAC
+                        is able to specify our target voltage with extreme precision given the C++ code we wrote
+                        in the Arduino sketch. In this scenario, each button is fed into a data pin on the micro,
+                        which is then processed to output a constant voltage. Our DAC and its wired configuration
+                        is detailed below.
+                    </p>
+
+                    <!-- Digital DAC Module Image -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/digital_dac_module.png" alt="Digital DAC Module"
+                            style="width: 100%; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 2: Digital DAC Module<br>
+                            The purpose of this block is to generate a unique DC voltage for each note/button. These DC
+                            voltages and their corresponding frequencies and notes are summarized in the table below
+                            when testing the actual circuit.
+                        </p>
+                    </div>
+
+                    <!-- Frequency Table -->
+                    <div class="table-container" style="overflow-x: auto;">
+                        <table
+                            style="width: 100%; border-collapse: collapse; margin-top: 1rem; color: var(--text-primary);">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.1); text-align: left;">
+                                    <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Note</th>
+                                    <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Frequency
+                                        (Hz)</th>
+                                    <th style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        V<sub>Out</sub> (V)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        A<sub>4</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">440</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.35</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        A#<sub>4</sub>/B♭<sub>4</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">466</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.37</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        B<sub>4</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">494</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.39</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        C<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">523</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.42</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        C#<sub>5</sub>/D♭<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">554</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.45</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        D<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">587</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.475
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        D#<sub>5</sub>/E♭<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">622</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.505
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        E<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">659</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.535
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        F<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">698</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.575
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        F#<sub>5</sub>/G♭<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">740</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.615
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        G<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">784</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.65</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        G#<sub>5</sub>/A♭<sub>5</sub></td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">831</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">0.70</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Table 1: DAC design for 5th octave
+                        </p>
+                    </div>
+
+                </div>
         </div>
-    </div>
 </body>
 
 </html>
