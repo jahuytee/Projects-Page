@@ -954,15 +954,18 @@
                 const length = 10 + Math.random() * 25;
                 const direction = Math.floor(Math.random() * 8); // 8 directions
 
+                // Variable angle between 25-45 degrees (0.42 to 0.71 ratio)
+                const angleRatio = 0.42 + Math.random() * 0.29;
+
                 switch (direction) {
                     case 0: x += length; break; // right
                     case 1: x -= length; break; // left
                     case 2: y += length; break; // down
                     case 3: y -= length; break; // up
-                    case 4: x += length * 0.7; y += length * 0.7; break; // diagonal down-right
-                    case 5: x -= length * 0.7; y += length * 0.7; break; // diagonal down-left
-                    case 6: x += length * 0.7; y -= length * 0.7; break; // diagonal up-right
-                    case 7: x -= length * 0.7; y -= length * 0.7; break; // diagonal up-left
+                    case 4: x += length * angleRatio; y += length * angleRatio; break; // diagonal down-right
+                    case 5: x -= length * angleRatio; y += length * angleRatio; break; // diagonal down-left
+                    case 6: x += length * angleRatio; y -= length * angleRatio; break; // diagonal up-right
+                    case 7: x -= length * angleRatio; y -= length * angleRatio; break; // diagonal up-left
                 }
 
                 // Keep within bounds
