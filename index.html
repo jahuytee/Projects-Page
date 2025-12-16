@@ -345,12 +345,32 @@
                 vizCanvas.width = vizCanvas.offsetWidth;
                 vizCanvas.height = vizCanvas.offsetHeight;
 
-                vizCtx.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent
                 vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
 
                 const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                analyser.getByteTimeDomainData(dataArray);
+
+                // === FREQUENCY DOMAIN (FFT) - Draw bars in background ===
+                const freqData = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(freqData);
+
+                // Only use first 64 frequency bins (bass to mids, most visually interesting)
+                const numBars = 64;
+                const barWidth = vizCanvas.width / numBars;
+
+                for (let i = 0; i < numBars; i++) {
+                    const barHeight = (freqData[i] / 255) * vizCanvas.height * 0.8;
+                    const x = i * barWidth;
+                    const y = vizCanvas.height - barHeight;
+
+                    // Gradient from cyan (bass) to purple (mids)
+                    const hue = 180 + (i / numBars) * 80; // 180=cyan, 260=purple
+                    vizCtx.fillStyle = `hsla(${hue}, 80%, 60%, 0.3)`;
+                    vizCtx.fillRect(x, y, barWidth - 1, barHeight);
+                }
+
+                // === TIME DOMAIN (Waveform) - Draw wave on top ===
+                const timeData = new Uint8Array(bufferLength);
+                analyser.getByteTimeDomainData(timeData);
 
                 // Gradient for Wave
                 const gradient = vizCtx.createLinearGradient(0, 0, vizCanvas.width, 0);
@@ -360,16 +380,18 @@
 
                 vizCtx.lineWidth = 2;
                 vizCtx.strokeStyle = gradient;
+                vizCtx.shadowBlur = 8;
+                vizCtx.shadowColor = '#a855f7';
                 vizCtx.beginPath();
 
-                const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
+                const sliceWidth = vizCanvas.width / bufferLength;
                 let x = 0;
 
-                // Raw Waveform (Volume vs. Samples) - Amplified 2.5x for more visible peaks
-                const amplify = 2.5; // Amplification factor
+                // Raw Waveform - Amplified 2.5x
+                const amplify = 2.5;
                 for (let i = 0; i < bufferLength; i++) {
-                    const v = (dataArray[i] / 128.0 - 1) * amplify; // Center at 0, then amplify
-                    const y = (v + 1) * vizCanvas.height / 2; // Map back to canvas
+                    const v = (timeData[i] / 128.0 - 1) * amplify;
+                    const y = (v + 1) * vizCanvas.height / 2;
                     if (i === 0) vizCtx.moveTo(x, y);
                     else vizCtx.lineTo(x, y);
                     x += sliceWidth;
@@ -377,6 +399,7 @@
 
                 vizCtx.lineTo(vizCanvas.width, vizCanvas.height / 2);
                 vizCtx.stroke();
+                vizCtx.shadowBlur = 0;
 
                 animationId = requestAnimationFrame(drawVisualizer);
             }
