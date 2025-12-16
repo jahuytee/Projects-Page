@@ -153,10 +153,24 @@
                                 </div>
                                 <!-- Navigation Arrows -->
                                 <button class="vinyl-nav vinyl-prev" onclick="moveVinylCarousel(-1)"
-                                    style="position: absolute; left: 0; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem;">‹</button>
+                                    style="position: absolute; left: 0; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem; z-index: 20;">‹</button>
                                 <button class="vinyl-nav vinyl-next" onclick="moveVinylCarousel(1)"
-                                    style="position: absolute; right: 0; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem;">›</button>
+                                    style="position: absolute; right: 0; background: rgba(255,255,255,0.1); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem; z-index: 20;">›</button>
+
+                                <!-- Audio Play Button Overlay -->
+                                <div id="audioControls"
+                                    style="position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); z-index: 30; opacity: 0; transition: opacity 0.3s;">
+                                    <button id="playBtn" class="glass-panel"
+                                        style="border-radius: 50px; padding: 0.5rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                        <i class="fa-solid fa-play" id="playIcon"></i>
+                                        <span style="font-size: 0.8rem;">Play Demo</span>
+                                    </button>
+                                </div>
                             </div>
+
+                            <!-- Audio Visualizer Canvas -->
+                            <canvas id="visualizerCanvas"
+                                style="width: 100%; height: 60px; margin-top: 1rem; display: none;"></canvas>
                         </div>
 
                         <div class="links" style="margin-top: 1.5rem;">
@@ -241,6 +255,146 @@
             });
 
             updateVinylCarousel();
+
+            // Audio Player & Visualizer
+            const playBtn = document.getElementById('playBtn');
+            const playIcon = document.getElementById('playIcon');
+            const audioControls = document.getElementById('audioControls');
+            const vizCanvas = document.getElementById('visualizerCanvas');
+            const vizCtx = vizCanvas.getContext('2d');
+
+            let audioContext;
+            let analyser;
+            let source;
+            let isPlaying = false;
+            let animationId;
+
+            // Show play button when carousel is interacted with
+            document.querySelector('.vinyl-carousel-container').addEventListener('mouseenter', () => {
+                audioControls.style.opacity = '1';
+            });
+
+            document.querySelector('.vinyl-carousel-container').addEventListener('mouseleave', () => {
+                if (!isPlaying) audioControls.style.opacity = '0';
+            });
+
+            playBtn.addEventListener('click', togglePlay);
+
+            function togglePlay() {
+                if (!isPlaying) {
+                    startAudio();
+                } else {
+                    stopAudio();
+                }
+            }
+
+            function startAudio() {
+                // Initialize Audio Context on user gesture
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256; // Defines resolution
+                }
+
+                // Create Synth Tone (Oscillator)
+                // In future: load mp3 file here using Audio element
+                const osc = audioContext.createOscillator();
+                osc.type = 'sine';
+
+                // Random frequency based on current vinyl to make it interesting
+                // Blonde=0, Channel=1, Igor=2, OK=3, Mazzy=4
+                const baseFreq = 220 + (vinylCurrentIndex * 50);
+                osc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+
+                // Add an LFO (Low Frequency Oscillator) to make it wobble/interesting
+                const lfo = audioContext.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 2; // 2Hz wobble
+                const lfoGain = audioContext.createGain();
+                lfoGain.gain.value = 50;
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                lfo.start();
+
+                // Gain node for volume control
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1; // Keep it quiet
+
+                osc.connect(gainNode);
+                gainNode.connect(analyser);
+                analyser.connect(audioContext.destination);
+
+                osc.start();
+                source = { stop: () => { osc.stop(); lfo.stop(); } }; // Mock source object
+
+                // UI Updates
+                isPlaying = true;
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+                vizCanvas.style.display = 'block';
+                document.querySelector('.vinyl-3d-item.active img').style.animation = 'spin 4s linear infinite';
+
+                drawVisualizer();
+            }
+
+            function stopAudio() {
+                if (source) {
+                    source.stop();
+                    source = null;
+                }
+
+                // UI Updates
+                isPlaying = false;
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                cancelAnimationFrame(animationId);
+                vizCanvas.style.display = 'none';
+                document.querySelector('.vinyl-3d-item.active img').style.animation = 'none';
+            }
+
+            function drawVisualizer() {
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteTimeDomainData(dataArray);
+
+                vizCanvas.width = vizCanvas.offsetWidth;
+                vizCanvas.height = vizCanvas.offsetHeight;
+
+                vizCtx.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent
+                vizCtx.clearRect(0, 0, vizCanvas.width, vizCanvas.height);
+
+                vizCtx.lineWidth = 2;
+                vizCtx.strokeStyle = '#22d3ee'; // Cyan
+                vizCtx.beginPath();
+
+                const sliceWidth = vizCanvas.width * 1.0 / bufferLength;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * vizCanvas.height / 2;
+
+                    if (i === 0) {
+                        vizCtx.moveTo(x, y);
+                    } else {
+                        vizCtx.lineTo(x, y);
+                    }
+
+                    x += sliceWidth;
+                }
+
+                vizCtx.lineTo(vizCanvas.width, vizCanvas.height / 2);
+                vizCtx.stroke();
+
+                animationId = requestAnimationFrame(drawVisualizer);
+            }
+
+            // Stop audio if vinyl is changed
+            const originalMoveVinyl = moveVinylCarousel;
+            moveVinylCarousel = function (direction) {
+                if (isPlaying) stopAudio();
+                originalMoveVinyl(direction);
+            }
         </script>
 
         <!-- Skills Section -->
