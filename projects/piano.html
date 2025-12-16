@@ -318,25 +318,97 @@
                     </div>
 
                     <p>Substituting \(V_H\) and inverting gives the frequency:</p>
-                    <div style="font-size: 1.25rem; margin: 1.5rem 0; text-align: center;">
+
+                    <!-- Boxed Equation -->
+                    <div
+                        style="font-size: 1.5rem; margin: 2rem auto; text-align: center; border: 2px solid var(--accent-primary); padding: 1.5rem; border-radius: 12px; width: fit-content; background: rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);">
                         $$ f(V_{in}) = \frac{1}{T} = \frac{R_4 V_{in}}{2R_1 R_3 C V_{CC}} - \frac{R_2 R_4 V_{in}^2}{2
-                        R_1^2 R_3 C V_{CC}^2}. $$
+                        R_1^2 R_3 C V_{CC}^2} $$
                     </div>
 
                     <p>
                         Thus, with this equation we were able to design given components for our circuit. With that
                         being
                         said, we picked the following values for each of our components: \(V_{CC} = 5V, R_1 =
-                        100k\Omega, R_2 =
-                        50k\Omega, R_3 = 10k\Omega, R_4 = 100k\Omega,\) and \(C = 10nF\). This produces the following
-                        expression for frequency
-                        as a function of voltage:
+                        100k\Omega, R_2 = 50k\Omega, R_3 = 10k\Omega, R_4 = 100k\Omega,\) and \(C = 10nF\). This
+                        produces the following
+                        expression for frequency as a function of voltage:
                     </p>
 
-                    <!-- Boxed Equation -->
-                    <div
-                        style="font-size: 1.5rem; margin: 2rem auto; text-align: center; border: 2px solid var(--accent-primary); padding: 1.5rem; border-radius: 12px; width: fit-content; background: rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);">
+                    <div style="font-size: 1.25rem; margin: 1.5rem 0; text-align: center;">
                         $$ f(V_{in}) = 1000V_{in} - 1000V_{in}^2 $$
+                    </div>
+
+                    <p>
+                        Next, we needed to process this signal a bit by cutting off certain frequencies while also
+                        amplifying the signal. To do this, we first implemented a low pass filter, of which the
+                        schematic
+                        is shown below in Figure 4.
+                    </p>
+
+                    <!-- Low Pass Filter Schematic -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/lowpass_filter_schematic.png" alt="Low Pass Filter Schematic"
+                            style="width: 100%; max-width: 400px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 4: Schematic of Low Pass Filter
+                        </p>
+                    </div>
+
+                    <p>
+                        The cutoff frequency for the low pass filter is well known, so we won't be including a full
+                        derivation. That being said the relationship ends up being \(f_{cutoff} = \frac{1}{2\pi RC}\).
+                        In this case
+                        we are targeting the 5th octave (440 Hz - 831 Hz). As such, we decided to cutoff at a bit
+                        above the highest frequency, so we chose \(f_{cutoff} = 1\text{ kHz}\). Thus, given the above
+                        relationship
+                        for cutoff frequency in a low pass filter, we designed the components of the filter to be the
+                        following values: \(R = 10k\Omega\) and \(C = 15nF\).
+                    </p>
+
+                    <p>
+                        Finally, we wanted to amplify our signal such that we get a loud enough sound to be played.
+                        To do this, we implemented a non-inverting amplifier using another op-amp. The schematic for
+                        this circuit is shown below in Figure 5.
+                    </p>
+
+                    <!-- Non-Inverting Amplifier Schematic -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/noninverting_amp_schematic.png"
+                            alt="Non-Inverting Amplifier Schematic"
+                            style="width: 100%; max-width: 400px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 5: Non-Inverting Amplifier Schematic
+                        </p>
+                    </div>
+
+                    <p>
+                        Again, the gain of the non-inverting amplifier is well-known, so we won't be including a full
+                        derivation. That being said, the gain abides by the following relationship: \(A_v = 1 +
+                        \frac{R_1}{R_2}\).
+                        We thought a gain of 5 would be a reasonable amplification factor as to make the produced
+                        sound just loud enough that it would be pleasant for the ears. As such, we designed our
+                        values for each resistor to then be: \(R_1 = 3k\Omega\) and \(R_2 = 750\Omega\).
+                    </p>
+
+                    <p>
+                        The final circuit was then constructed and we arrived at the final schematic with each of our
+                        designed values, which is shown below in Figure 6.
+                    </p>
+
+                    <!-- Full V2F Schematic -->
+                    <div class="technical-image-container"
+                        style="margin-top: 2rem; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+                        <img src="../assets/images/full_v2f_schematic.png" alt="Full V2F Schematic with Post Processing"
+                            style="width: 100%; max-width: 750px; display: block; margin: 0 auto; border-radius: 4px;">
+                        <p class="caption"
+                            style="text-align: center; color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">
+                            Figure 6: Full Voltage-to-Frequency Converter Schematic with Post Processing
+                        </p>
                     </div>
 
                 </div>
