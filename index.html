@@ -252,15 +252,26 @@
             let charIndex = 0;
 
             function typeWriter() {
-                if (charIndex < textToType.length) {
+                if (typedElement && charIndex < textToType.length) {
                     typedElement.textContent += textToType.charAt(charIndex);
                     charIndex++;
                     setTimeout(typeWriter, 120);
+                } else if (typedElement && charIndex === 0) {
+                    // Fallback: show full name if typewriter fails
+                    typedElement.textContent = textToType;
                 }
             }
 
             // Start typing after a short delay
-            setTimeout(typeWriter, 500);
+            if (typedElement) {
+                setTimeout(typeWriter, 500);
+            } else {
+                // If element not found, try again when DOM is ready
+                document.addEventListener('DOMContentLoaded', () => {
+                    const el = document.getElementById('typedName');
+                    if (el) el.textContent = 'Jason Tran';
+                });
+            }
         </script>
 
         <!-- Skills Section -->
