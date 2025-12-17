@@ -1,0 +1,13 @@
+# Environment variables (keep your secrets safe!)
+.env
+.env.local
+.env*.local
+
+# Spotify OAuth script (contains credentials)
+get-spotify-token.py
+
+# Node modules
+node_modules/
+
+# Vercel
+.vercel

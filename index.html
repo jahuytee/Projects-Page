@@ -818,14 +818,11 @@
                     </div>
 
                     <!-- Spotify Now Playing -->
-                    <div class="glass-panel spotify-widget">
+                    <div class="glass-panel spotify-widget" id="spotifyWidget">
                         <h3><i class="fa-brands fa-spotify" style="color: #1DB954;"></i> Now Playing</h3>
-                        <iframe style="border-radius:12px"
-                            src="https://open.spotify.com/embed/track/3hRV0jL3vUpRrcy398teAU?utm_source=generator&theme=0"
-                            width="100%" height="152" frameBorder="0" allowfullscreen=""
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            loading="lazy">
-                        </iframe>
+                        <div id="nowPlayingContent" style="padding: 1rem 0;">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">Loading...</p>
+                        </div>
                     </div>
                 </div>
 
@@ -1553,6 +1550,51 @@
                 }, 1500);
             });
         }
+
+        // Spotify Now Playing
+        async function updateNowPlaying() {
+            try {
+                const response = await fetch('/api/now-playing');
+                const data = await response.json();
+
+                const content = document.getElementById('nowPlayingContent');
+
+                if (data.isPlaying) {
+                    content.innerHTML = `
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <img src="${data.albumImageUrl}" alt="Album Art" 
+                                 style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                            <div style="flex: 1; min-width: 0;">
+                                <a href="${data.songUrl}" target="_blank" 
+                                   style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.95rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${data.title}
+                                </a>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0.25rem 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ${data.artist}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin: 0;">
+                            Not playing anything right now
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching now playing:', error);
+                document.getElementById('nowPlayingContent').innerHTML = `
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin: 0;">
+                        Unable to load
+                    </p>
+                `;
+            }
+        }
+
+        // Update immediately and every 30 seconds
+        updateNowPlaying();
+        setInterval(updateNowPlaying, 30000);
     </script>
 </body>
 
