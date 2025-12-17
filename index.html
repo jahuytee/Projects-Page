@@ -1350,6 +1350,34 @@
             const scrollPercent = (scrollTop / scrollHeight) * 100;
             scrollProgress.style.width = scrollPercent + '%';
         });
+
+        // Card Pickup Animation - intercept project card link clicks
+        document.querySelectorAll('.project-card .btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                const target = this.getAttribute('target');
+                const card = this.closest('.project-card');
+
+                if (card && !card.classList.contains('card-flying')) {
+                    // Add flying class to trigger animation
+                    card.classList.add('card-flying');
+
+                    // Navigate after animation completes
+                    setTimeout(() => {
+                        if (target === '_blank') {
+                            window.open(href, '_blank');
+                        } else {
+                            window.location.href = href;
+                        }
+                        // Reset card after navigation (for back button)
+                        setTimeout(() => {
+                            card.classList.remove('card-flying');
+                        }, 100);
+                    }, 700);
+                }
+            });
+        });
     </script>
 </body>
 
