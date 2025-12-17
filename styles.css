@@ -451,11 +451,11 @@ h1 {
     grid-template-columns: 1fr;
     padding: 0;
     overflow: hidden;
-    min-height: 300px;
+    min-height: 340px;
 }
 
 .experience-content {
-    padding: 2.5rem;
+    padding: 3rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
