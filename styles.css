@@ -31,9 +31,9 @@ body.eco-mode {
 
 /* Eco Mode - Glass Panel Overrides */
 body.eco-mode .glass-panel {
-    background: rgba(34, 60, 34, 0.6);
-    border-color: rgba(132, 204, 22, 0.2);
-    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
+    background: rgba(15, 35, 15, 0.85);
+    border-color: rgba(132, 204, 22, 0.25);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
 }
 
 body.eco-mode .glass-panel:hover {
