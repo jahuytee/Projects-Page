@@ -1560,6 +1560,15 @@
                 const content = document.getElementById('nowPlayingContent');
 
                 if (data.isPlaying) {
+                    // Format time helper function
+                    const formatTime = (ms) => {
+                        const minutes = Math.floor(ms / 60000);
+                        const seconds = Math.floor((ms % 60000) / 1000);
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    };
+
+                    const progressPercent = (data.progressMs / data.durationMs) * 100;
+
                     content.innerHTML = `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem 0;">
                             <img src="${data.albumImageUrl}" alt="Album Art" 
@@ -1572,12 +1581,28 @@
                                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 0.3rem 0;">
                                     ${data.artist}
                                 </p>
-                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0; font-style: italic;">
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0 0 0.8rem 0; font-style: italic;">
                                     ${data.album}
                                 </p>
+                                
+                                <!-- Progress Bar -->
+                                <div style="width: 100%; margin-top: 0.8rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                                        <span style="color: var(--text-tertiary); font-size: 0.75rem;">${formatTime(data.progressMs)}</span>
+                                        <span style="color: var(--text-tertiary); font-size: 0.75rem;">${formatTime(data.durationMs)}</span>
+                                    </div>
+                                    <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                        <div id="progressBar" style="width: ${progressPercent}%; height: 100%; background: #1DB954; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
+
+                    // Store start time and progress for smooth animation
+                    window.spotifyStartTime = Date.now();
+                    window.spotifyStartProgress = data.progressMs;
+                    window.spotifyDuration = data.durationMs;
                 } else {
                     content.innerHTML = `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem 0;">
@@ -1601,6 +1626,19 @@
         // Update immediately and every 30 seconds
         updateNowPlaying();
         setInterval(updateNowPlaying, 30000);
+
+        // Smooth progress bar animation (updates every second)
+        setInterval(() => {
+            if (window.spotifyStartTime && window.spotifyDuration) {
+                const progressBar = document.getElementById('progressBar');
+                if (progressBar) {
+                    const elapsed = Date.now() - window.spotifyStartTime;
+                    const currentProgress = window.spotifyStartProgress + elapsed;
+                    const progressPercent = Math.min((currentProgress / window.spotifyDuration) * 100, 100);
+                    progressBar.style.width = `${progressPercent}%`;
+                }
+            }
+        }, 1000);
     </script>
 </body>
 

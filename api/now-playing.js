@@ -50,6 +50,8 @@ async function getNowPlaying() {
     const album = song.item.album.name;
     const albumImageUrl = song.item.album.images[0]?.url;
     const songUrl = song.item.external_urls.spotify;
+    const progressMs = song.progress_ms;
+    const durationMs = song.item.duration_ms;
 
     return {
         isPlaying,
@@ -58,6 +60,8 @@ async function getNowPlaying() {
         album,
         albumImageUrl,
         songUrl,
+        progressMs,
+        durationMs,
     };
 }
 
