@@ -10,6 +10,22 @@
     --blur: 16px;
     --nav-height: 80px;
     --text-gradient: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+    /* Tech mode colors */
+    --glow-1: #22d3ee;
+    --glow-2: #a855f7;
+    --bg-gradient-1: rgba(56, 189, 248, 0.1);
+    --bg-gradient-2: rgba(129, 140, 248, 0.1);
+}
+
+/* Eco Mode Theme */
+body.eco-mode {
+    --bg-dark: #0a1f0a;
+    --bg-card: rgba(10, 31, 10, 0.6);
+    --glow-1: #84cc16;
+    --glow-2: #10b981;
+    --bg-gradient-1: rgba(132, 204, 22, 0.1);
+    --bg-gradient-2: rgba(16, 185, 129, 0.1);
+    --glass-border: rgba(132, 204, 22, 0.15);
 }
 
 html {
@@ -33,8 +49,9 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     background-image:
-        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.1) 0%, transparent 20%),
-        radial-gradient(circle at 90% 80%, rgba(129, 140, 248, 0.1) 0%, transparent 20%);
+        radial-gradient(circle at 10% 20%, var(--bg-gradient-1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, var(--bg-gradient-2) 0%, transparent 20%);
+    transition: background-color 0.5s ease, background-image 0.5s ease;
 }
 
 h1,
@@ -61,7 +78,14 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 2rem;
+    padding: 0 2rem;
     animation: fadeIn 0.5s ease-out forwards;
+    transition: background 0.5s ease;
+}
+
+body.eco-mode nav {
+    background: rgba(10, 31, 10, 0.85);
 }
 
 .nav-links {
@@ -1175,4 +1199,40 @@ h1 {
         opacity: 0;
         box-shadow: 0 60px 100px rgba(168, 85, 247, 0.5);
     }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: var(--glow-1);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+
+body.eco-mode .theme-toggle:hover {
+    border-color: #84cc16;
+    box-shadow: 0 0 15px rgba(132, 204, 22, 0.3);
+}
+
+.theme-toggle .toggle-icon {
+    font-size: 1.1rem;
+}
+
+.theme-toggle .toggle-label {
+    font-weight: 500;
 }

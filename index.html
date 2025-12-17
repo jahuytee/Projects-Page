@@ -35,6 +35,10 @@
             <li><a href="#projects">Projects</a></li>
             <li><a href="#contact">Contact Me</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle">
+            <span class="toggle-icon">🌙</span>
+            <span class="toggle-label">Mode</span>
+        </button>
     </nav>
 
     <main class="container">
@@ -395,14 +399,21 @@
                 analyser.getByteTimeDomainData(timeData);
 
                 const gradient = vizCtx.createLinearGradient(0, 0, vizCanvas.width, 0);
-                gradient.addColorStop(0, '#22d3ee');
-                gradient.addColorStop(0.5, '#a855f7');
-                gradient.addColorStop(1, '#e879f9');
+                const isEco = document.body.classList.contains('eco-mode');
+                if (isEco) {
+                    gradient.addColorStop(0, '#84cc16');
+                    gradient.addColorStop(0.5, '#10b981');
+                    gradient.addColorStop(1, '#22c55e');
+                } else {
+                    gradient.addColorStop(0, '#22d3ee');
+                    gradient.addColorStop(0.5, '#a855f7');
+                    gradient.addColorStop(1, '#e879f9');
+                }
 
                 vizCtx.lineWidth = 2;
                 vizCtx.strokeStyle = gradient;
                 vizCtx.shadowBlur = 8;
-                vizCtx.shadowColor = '#a855f7';
+                vizCtx.shadowColor = isEco ? '#10b981' : '#a855f7';
                 vizCtx.beginPath();
 
                 const sliceWidth = vizCanvas.width / bufferLength;
@@ -1066,14 +1077,19 @@
 
     <!-- Particle Animation Script -->
     <script>
-        // Particle Canvas - Electron Constellation Effect
+        // Particle Canvas - Electron Constellation / Eco Leaves
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
 
         let particles = [];
         const particleCount = 100;
         const connectionDistance = 150;
-        const colors = ['#38bdf8', '#818cf8', '#a855f7', '#22d3ee'];
+        const techColors = ['#38bdf8', '#818cf8', '#a855f7', '#22d3ee'];
+        const ecoColors = ['#84cc16', '#10b981', '#22c55e', '#34d399'];
+
+        function getColors() {
+            return document.body.classList.contains('eco-mode') ? ecoColors : techColors;
+        }
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -1087,13 +1103,16 @@
                 this.vx = (Math.random() - 0.5) * 0.8;
                 this.vy = (Math.random() - 0.5) * 0.8;
                 this.radius = Math.random() * 3 + 2;
-                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.colorIndex = Math.floor(Math.random() * 4);
                 this.alpha = Math.random() * 0.6 + 0.4;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
+                this.rotation += this.rotationSpeed;
 
                 // Bounce off edges
                 if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
@@ -1101,11 +1120,27 @@
             }
 
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
+                const colors = getColors();
                 ctx.globalAlpha = this.alpha;
-                ctx.fill();
+                ctx.fillStyle = colors[this.colorIndex];
+
+                if (document.body.classList.contains('eco-mode')) {
+                    // Draw leaf shape
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.radius * 2);
+                    ctx.quadraticCurveTo(this.radius * 1.5, -this.radius, 0, this.radius * 2);
+                    ctx.quadraticCurveTo(-this.radius * 1.5, -this.radius, 0, -this.radius * 2);
+                    ctx.fill();
+                    ctx.restore();
+                } else {
+                    // Draw circle
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 ctx.globalAlpha = 1;
             }
         }
@@ -1118,6 +1153,11 @@
         }
 
         function drawConnections() {
+            const isEco = document.body.classList.contains('eco-mode');
+            const lineColor = isEco ? '132, 204, 22' : '56, 189, 248';
+            const sparkColor1 = isEco ? '132, 204, 22' : '56, 189, 248';
+            const sparkColor2 = isEco ? '16, 185, 129' : '168, 85, 247';
+
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
@@ -1129,7 +1169,7 @@
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
+                        ctx.strokeStyle = `rgba(${lineColor}, ${opacity})`;
                         ctx.lineWidth = 1;
                         ctx.stroke();
 
@@ -1142,8 +1182,8 @@
                             // Draw spark glow
                             const gradient = ctx.createRadialGradient(midX, midY, 0, midX, midY, sparkSize * 2);
                             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-                            gradient.addColorStop(0.3, 'rgba(56, 189, 248, 0.6)');
-                            gradient.addColorStop(1, 'rgba(168, 85, 247, 0)');
+                            gradient.addColorStop(0.3, `rgba(${sparkColor1}, 0.6)`);
+                            gradient.addColorStop(1, `rgba(${sparkColor2}, 0)`);
 
                             ctx.beginPath();
                             ctx.arc(midX, midY, sparkSize * 2, 0, Math.PI * 2);
@@ -1377,6 +1417,28 @@
                     }, 700);
                 }
             });
+        });
+
+        // Theme Toggle (Tech Mode / Eco Mode)
+        const themeToggle = document.getElementById('themeToggle');
+        const toggleIcon = themeToggle.querySelector('.toggle-icon');
+        const toggleLabel = themeToggle.querySelector('.toggle-label');
+
+        // Load saved theme preference
+        if (localStorage.getItem('theme') === 'eco') {
+            document.body.classList.add('eco-mode');
+            toggleIcon.textContent = '🌱';
+            toggleLabel.textContent = 'Eco';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('eco-mode');
+            const isEco = document.body.classList.contains('eco-mode');
+
+            toggleIcon.textContent = isEco ? '🌱' : '🌙';
+            toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
+
+            localStorage.setItem('theme', isEco ? 'eco' : 'tech');
         });
     </script>
 </body>
