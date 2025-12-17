@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Renewable Energy Lab Optimization - Jason Tran</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="../index.html#about">About Me</a></li>
+            <li><a href="../index.html#skills">Skills</a></li>
+            <li><a href="../index.html#experience">Experience</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#contact">Contact Me</a></li>
+        </ul>
+    </nav>
+
+    <button id="themeToggle" class="theme-toggle">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-label">Mode</span>
+    </button>
+
+    <main class="container" style="padding-top: calc(var(--nav-height) + 2rem); max-width: 1000px;">
+        <section class="detail-section">
+            <div class="header-main glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h1>Renewable Energy Lab Optimization</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem;">
+                        Targeting Energy Waste in EAS Photonics and Electronics Laboratories
+                    </p>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <a href="https://github.com/jahuytee/Projects-Page" target="_blank" class="btn">
+                        <i class="fa-brands fa-github"></i> View on GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project Overview -->
+            <section class="detail-section glass-panel">
+                <h2>1. Project Overview</h2>
+                <div class="text-content">
+                    <h3>Motivation</h3>
+                    <p>
+                        EAS labs, particularly photonics, applied physics, and high-frequency electronics groups,
+                        operate equipment with significant continuous power draw. These labs differ from BBE/CCE
+                        laboratories in that most energy waste comes not from chemical/biological workflows but
+                        from always-on electronic infrastructure.
+                    </p>
+
+                    <h4 style="margin-top: 1.5rem;">Common Waste Sources:</h4>
+                    <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                        <li>Lasers left on for thermal stability</li>
+                        <li>Vacuum pumps running 24/7</li>
+                        <li>Idle oscilloscopes and waveform generators</li>
+                        <li>Motorized stages and high-performance servers</li>
+                        <li>Desktop computers with high standby consumption</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Target Labs -->
+            <section class="detail-section glass-panel">
+                <h2>2. Candidate Labs to Target</h2>
+                <div class="text-content">
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div
+                            style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--glow-1);">
+                            <h4 style="color: var(--glow-1); margin-bottom: 0.5rem;">
+                                <i class="fa-solid fa-microchip"></i> Hajimiri Group
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                                High-frequency circuits, photonics, integrated photonic and electronic systems,
+                                optical phased arrays, mm-wave/THz electronics. Equipment: RF test benches,
+                                lasers, signal generators, power amplifiers.
+                            </p>
+                            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-tertiary);">
+                                <i class="fa-solid fa-link"></i>
+                                <a href="https://chic.caltech.edu/" target="_blank"
+                                    style="color: var(--glow-1);">chic.caltech.edu</a>
+                            </p>
+                        </div>
+
+                        <div
+                            style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--glow-2);">
+                            <h4 style="color: var(--glow-2); margin-bottom: 0.5rem;">
+                                <i class="fa-solid fa-atom"></i> Atwater Group
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                                Lasers, optics, vacuum systems for photonics research.
+                            </p>
+                        </div>
+
+                        <div
+                            style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--glow-1);">
+                            <h4 style="color: var(--glow-1); margin-bottom: 0.5rem;">
+                                <i class="fa-solid fa-lightbulb"></i> Other Target Labs
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                                Painter Lab (optomechanics), Vuckovic Lab, Vahala Lab (laser cooling),
+                                EAS teaching labs with oscilloscopes and power supplies.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Waste Sources -->
+            <section class="detail-section glass-panel">
+                <h2>3. Equipment Waste Sources</h2>
+                <div class="text-content">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--glass-border);">
+                                <th style="padding: 1rem; text-align: left;">Equipment Type</th>
+                                <th style="padding: 1rem; text-align: left;">Waste Potential</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1rem; color: var(--text-primary);">
+                                    <strong>Test Equipment</strong><br>
+                                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                        Oscilloscopes, power supplies, signal generators, spectrum analyzers
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary);">
+                                    High idle power, often left on 24/7
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1rem; color: var(--text-primary);">
+                                    <strong>Laser Systems</strong><br>
+                                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                        CW lasers, diode lasers, laser controllers
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary);">
+                                    Left warming overnight, continuous bias
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1rem; color: var(--text-primary);">
+                                    <strong>Vacuum Systems</strong><br>
+                                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                        Rotary pumps, turbo pumps
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary);">
+                                    Running continuously even when inactive
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1rem; color: var(--text-primary);">
+                                    <strong>Computing</strong><br>
+                                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                        Desktop computers, monitors, servers
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary);">
+                                    Idle machines, unused monitors, high standby
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; color: var(--text-primary);">
+                                    <strong>Peripherals</strong><br>
+                                    <span style="font-size: 0.9rem; color: var(--text-secondary);">
+                                        3D printers, hot plates, environmental chambers
+                                    </span>
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary);">
+                                    Standby mode consumption
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Methodology -->
+            <section class="detail-section glass-panel">
+                <h2>4. Proposed Methodology</h2>
+                <div class="text-content">
+                    <ol style="line-height: 2; font-size: 1.05rem;">
+                        <li><strong>Equipment Mapping:</strong> Record approximate power draw (rated and idle) for each
+                            device</li>
+                        <li><strong>Sensor Deployment:</strong> Use smart power sensors (Kill-a-Watt, IoT energy plugs)
+                            for real-time logging</li>
+                        <li><strong>Data Analysis:</strong> Identify high idle power devices and quantify
+                            nighttime/weekend waste</li>
+                        <li><strong>Lab Interviews:</strong> Understand equipment warm-up requirements and usage
+                            patterns</li>
+                        <li><strong>Impact Estimation:</strong> Calculate potential annual savings in kWh, costs, and
+                            carbon reduction</li>
+                    </ol>
+
+                    <div
+                        style="margin-top: 2rem; padding: 1.5rem; background: rgba(34, 211, 238, 0.1); border-radius: 12px; border: 1px solid rgba(34, 211, 238, 0.2);">
+                        <h4 style="color: #22d3ee; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-chart-line"></i> Expected Impact
+                        </h4>
+                        <p style="color: var(--text-secondary);">
+                            Reducing idle power usage in EAS photonics/electronics labs could significantly lower campus
+                            energy consumption. Many single pieces of test equipment draw <strong>20–100 W</strong> even
+                            when unused,
+                            and combined nighttime loads may exceed <strong>several kilowatt-hours per lab
+                                daily</strong>.
+                            Targeted interventions have potential for both cost savings and substantial sustainability
+                            benefits.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interventions -->
+            <section class="detail-section glass-panel">
+                <h2>5. Potential Interventions</h2>
+                <div class="text-content">
+                    <div style="display: grid; gap: 1rem;">
+                        <div
+                            style="padding: 1rem; background: rgba(132, 204, 22, 0.1); border-radius: 8px; border-left: 3px solid #84cc16;">
+                            <strong style="color: #84cc16;"><i class="fa-solid fa-clipboard-check"></i> Policy &amp;
+                                Guidelines</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                Implement shutdown guidelines for non-critical equipment
+                            </p>
+                        </div>
+                        <div
+                            style="padding: 1rem; background: rgba(132, 204, 22, 0.1); border-radius: 8px; border-left: 3px solid #84cc16;">
+                            <strong style="color: #84cc16;"><i class="fa-solid fa-plug"></i> Smart Power
+                                Management</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                Timed smart-plug systems for oscilloscopes, monitors, and printers
+                            </p>
+                        </div>
+                        <div
+                            style="padding: 1rem; background: rgba(132, 204, 22, 0.1); border-radius: 8px; border-left: 3px solid #84cc16;">
+                            <strong style="color: #84cc16;"><i class="fa-solid fa-book"></i> Best Practices</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                Laser warm-up protocols, workstation sleep policies, device tagging (critical vs.
+                                non-critical)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Future Work -->
+            <section class="detail-section glass-panel">
+                <h2>6. Future Work</h2>
+                <div class="text-content">
+                    <h3>Advanced Implementation Ideas</h3>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="color: var(--glow-1); margin-bottom: 0.75rem;">
+                            <i class="fa-solid fa-brain"></i> ML-Based Predictive Shutdown System
+                        </h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            Develop machine learning model to predict equipment usage patterns and recommend optimal
+                            shutdown times.
+                        </p>
+                        <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>Inputs:</strong> Occupancy sensors, past usage logs, experiment schedules, lab
+                                calendars</li>
+                            <li><strong>Output:</strong> Automated recommendations for when equipment can safely power
+                                down</li>
+                            <li><strong>Benefit:</strong> Balance energy savings with operational requirements</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="color: var(--glow-2); margin-bottom: 0.75rem;">
+                            <i class="fa-solid fa-microchip"></i> IoT Energy Monitoring System
+                        </h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            Build custom smart plug sensor nodes for real-time power monitoring:
+                        </p>
+                        <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                            <li>Real-time power draw measurement (voltage, current, power factor)</li>
+                            <li>Data logging to server or SD card</li>
+                            <li>Idle vs. active state detection</li>
+                            <li>Alert system for equipment left on overnight</li>
+                            <li>Lab-wide energy profiling dashboard</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <h4 style="color: var(--glow-1); margin-bottom: 0.75rem;">
+                            <i class="fa-solid fa-battery-half"></i> Battery Health Analysis
+                        </h4>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                            Analyze charging inefficiency and phantom loads for lab equipment batteries:
+                        </p>
+                        <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                            <li>Robot batteries, UPS units, test rigs with rechargeable packs</li>
+                            <li>Sensors: INA219 current sensor, thermocouples, controlled discharge tests</li>
+                            <li>Outcome: Better charging protocols → reduced waste → longer battery life</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TODO -->
+            <section class="detail-section glass-panel">
+                <h2>7. Current TODO List</h2>
+                <div class="text-content">
+                    <div
+                        style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <h4 style="margin-bottom: 1rem;"><i class="fa-solid fa-tasks"></i> Next Steps</h4>
+                        <ul style="line-height: 2; color: var(--text-secondary);">
+                            <li><strong style="color: var(--text-primary);">✓ Research Phase:</strong> Compile lab
+                                information from CHIC/Hajimiri website and publications</li>
+                            <li><strong style="color: var(--text-primary);">○ Equipment Survey:</strong> Build template
+                                spreadsheet for equipment categories and power estimates</li>
+                            <li><strong style="color: var(--text-primary);">○ Lab Outreach:</strong> Contact lab
+                                managers for equipment inventory and usage practices</li>
+                            <li><strong style="color: var(--text-primary);">○ Pilot Study:</strong> Deploy smart plugs
+                                for small-scale measurement in target lab</li>
+                            <li><strong style="color: var(--text-primary);">○ Analysis:</strong> Estimate potential
+                                savings and draft waste risk profile</li>
+                            <li><strong style="color: var(--text-primary);">○ Recommendations:</strong> Write up
+                                intervention strategies and present findings</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Back Button -->
+            <div style="margin-top: 3rem; text-align: center;">
+                <a href="../index.html#projects" class="btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Projects
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const toggleIcon = themeToggle.querySelector('.toggle-icon');
+        const toggleLabel = themeToggle.querySelector('.toggle-label');
+
+        if (localStorage.getItem('theme') === 'eco') {
+            document.body.classList.add('eco-mode');
+            toggleIcon.textContent = '🌱';
+            toggleLabel.textContent = 'Eco';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('eco-mode');
+            const isEco = document.body.classList.contains('eco-mode');
+            toggleIcon.textContent = isEco ? '🌱' : '🌙';
+            toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
+            localStorage.setItem('theme', isEco ? 'eco' : 'tech');
+        });
+
+        // Particle Canvas
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+        const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
+        const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.colorIndex = Math.floor(Math.random() * 3);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
+                ctx.fillStyle = colors[this.colorIndex];
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
