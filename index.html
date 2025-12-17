@@ -810,60 +810,95 @@
                 container.appendChild(renderer.domElement);
 
                 const radius = 6;
-                const icoDetail = 4; // Higher subdivision for more defined look
+                const icoDetail = 5; // Higher subdivision for more defined Earth faces
 
-                // ===== SOLID MESH (starts invisible, fades in during stage 2) =====
+                // Simple noise function for continent generation
+                function noise3D(x, y, z) {
+                    const n = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+                    return (n - Math.floor(n)) * 2 - 1;
+                }
+
+                function fbm(x, y, z) {
+                    let value = 0;
+                    let amplitude = 0.5;
+                    let frequency = 1;
+                    for (let i = 0; i < 4; i++) {
+                        value += amplitude * noise3D(x * frequency, y * frequency, z * frequency);
+                        amplitude *= 0.5;
+                        frequency *= 2;
+                    }
+                    return value;
+                }
+
+                // ===== SOLID MESH =====
                 const solidGeo = new THREE.IcosahedronGeometry(radius, icoDetail);
                 const vertexCount = solidGeo.attributes.position.count;
 
-                // Three color sets: wireframe colors (stage 1), purple/blue (stage 2), Earth (stage 3)
-                const wireframeColors = new Float32Array(vertexCount * 3);
-                const solidColors = new Float32Array(vertexCount * 3);     // Purple/blue
-                const earthColors = new Float32Array(vertexCount * 3);      // Green/blue/white
+                const solidColors = new Float32Array(vertexCount * 3);
+                const earthColors = new Float32Array(vertexCount * 3);
                 const currentColors = new Float32Array(vertexCount * 3);
 
                 const cyanColor = new THREE.Color(0x22d3ee);
                 const purpleColor = new THREE.Color(0xa855f7);
-                const blueColor = new THREE.Color(0x3b82f6);
-                const oceanColor = new THREE.Color(0x0066aa);
-                const landColor = new THREE.Color(0x22c55e);
-                const iceColor = new THREE.Color(0xf0f8ff);
+                const deepOceanColor = new THREE.Color(0x0a4c7a);
+                const shallowOceanColor = new THREE.Color(0x1e90ff);
+                const landColor = new THREE.Color(0x228b22);
+                const highlandColor = new THREE.Color(0x2d5a27);
+                const iceColor = new THREE.Color(0xf5f5f5);
+                const desertColor = new THREE.Color(0xc19a6b);
 
                 const positions = solidGeo.attributes.position.array;
                 for (let i = 0; i < vertexCount; i++) {
+                    const x = positions[i * 3];
                     const y = positions[i * 3 + 1];
+                    const z = positions[i * 3 + 2];
+
                     const lat = y / radius;
                     const t = (lat + 1) / 2;
 
-                    // Wireframe colors (cyan to purple gradient)
-                    const wfColor = cyanColor.clone().lerp(purpleColor, t);
-                    wireframeColors[i * 3] = wfColor.r;
-                    wireframeColors[i * 3 + 1] = wfColor.g;
-                    wireframeColors[i * 3 + 2] = wfColor.b;
-
-                    // Solid colors (purple to blue gradient)
+                    // Solid colors (purple to cyan gradient)
                     const sColor = purpleColor.clone().lerp(cyanColor, t);
                     solidColors[i * 3] = sColor.r;
                     solidColors[i * 3 + 1] = sColor.g;
                     solidColors[i * 3 + 2] = sColor.b;
 
-                    // Earth colors
+                    // Earth colors using noise for realistic continents
                     let eColor;
-                    if (Math.abs(lat) > 0.75) {
+                    const absLat = Math.abs(lat);
+
+                    // Polar regions
+                    if (absLat > 0.85) {
                         eColor = iceColor;
-                    } else if (Math.random() > 0.5) {
-                        eColor = landColor;
-                    } else {
-                        eColor = oceanColor;
                     }
+                    // Land/ocean based on noise
+                    else {
+                        const noiseVal = fbm(x * 0.5, y * 0.5, z * 0.5);
+
+                        // Create continent-like patterns
+                        if (noiseVal > 0.1) {
+                            // Land
+                            if (absLat > 0.6) {
+                                eColor = highlandColor; // Higher latitudes = forests
+                            } else if (absLat < 0.2 && noiseVal > 0.3) {
+                                eColor = desertColor; // Near equator deserts
+                            } else {
+                                eColor = landColor; // Regular land
+                            }
+                        } else if (noiseVal > -0.1) {
+                            eColor = shallowOceanColor; // Coastal/shallow
+                        } else {
+                            eColor = deepOceanColor; // Deep ocean
+                        }
+                    }
+
                     earthColors[i * 3] = eColor.r;
                     earthColors[i * 3 + 1] = eColor.g;
                     earthColors[i * 3 + 2] = eColor.b;
 
-                    // Start with wireframe colors
-                    currentColors[i * 3] = wireframeColors[i * 3];
-                    currentColors[i * 3 + 1] = wireframeColors[i * 3 + 1];
-                    currentColors[i * 3 + 2] = wireframeColors[i * 3 + 2];
+                    // Start with solid colors
+                    currentColors[i * 3] = solidColors[i * 3];
+                    currentColors[i * 3 + 1] = solidColors[i * 3 + 1];
+                    currentColors[i * 3 + 2] = solidColors[i * 3 + 2];
                 }
 
                 solidGeo.setAttribute('color', new THREE.BufferAttribute(currentColors, 3));
@@ -877,24 +912,35 @@
                 const solidMesh = new THREE.Mesh(solidGeo, solidMaterial);
                 scene.add(solidMesh);
 
-                // ===== OUTER WIREFRAME (cyan, prominent in stage 1) =====
-                const outerWireGeo = new THREE.IcosahedronGeometry(radius * 1.02, 2);
+                // ===== OUTER WIREFRAME (more detail - 3 subdivision) =====
+                const outerWireGeo = new THREE.IcosahedronGeometry(radius * 1.02, 3);
                 const outerWireMat = new THREE.MeshBasicMaterial({
                     color: 0x22d3ee,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.9
                 });
                 const outerWireframe = new THREE.Mesh(outerWireGeo, outerWireMat);
                 scene.add(outerWireframe);
 
-                // ===== INNER WIREFRAME (purple) =====
-                const innerWireGeo = new THREE.IcosahedronGeometry(radius * 0.7, 1);
+                // ===== MIDDLE WIREFRAME =====
+                const midWireGeo = new THREE.IcosahedronGeometry(radius * 0.85, 2);
+                const midWireMat = new THREE.MeshBasicMaterial({
+                    color: 0x818cf8,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const midWireframe = new THREE.Mesh(midWireGeo, midWireMat);
+                scene.add(midWireframe);
+
+                // ===== INNER WIREFRAME =====
+                const innerWireGeo = new THREE.IcosahedronGeometry(radius * 0.6, 1);
                 const innerWireMat = new THREE.MeshBasicMaterial({
                     color: 0xa855f7,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.5
+                    opacity: 0.4
                 });
                 const innerWireframe = new THREE.Mesh(innerWireGeo, innerWireMat);
                 scene.add(innerWireframe);
@@ -902,15 +948,14 @@
                 camera.position.z = 14;
 
                 // ===== ANIMATION TIMING =====
-                const stage1Duration = 3;  // Wireframe only (0-3s)
-                const stage2Duration = 3;  // Fade in solid blue/purple (3-6s)
-                const stage3Duration = 4;  // Transform to Earth colors (6-10s)
+                const stage1Duration = 3;
+                const stage2Duration = 3;
+                const stage3Duration = 4;
                 const totalDuration = stage1Duration + stage2Duration + stage3Duration;
 
                 let startTime = null;
                 let isInView = false;
 
-                // Intersection Observer
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && !isInView) {
@@ -921,7 +966,6 @@
                 }, { threshold: 0.3 });
                 observer.observe(container);
 
-                // Mouse interaction
                 let mouseX = 0, mouseY = 0;
                 container.addEventListener('mousemove', (e) => {
                     const rect = container.getBoundingClientRect();
@@ -929,67 +973,59 @@
                     mouseY = ((e.clientY - rect.top) / rect.height) * 2 - 1;
                 });
 
-                // Easing function
                 function easeOutCubic(t) {
                     return 1 - Math.pow(1 - t, 3);
                 }
 
-                // Animation loop
                 function animate() {
                     requestAnimationFrame(animate);
 
                     if (isInView && startTime) {
                         const elapsed = (performance.now() - startTime) / 1000;
 
-                        // STAGE 1: Wireframe only (0-3s)
+                        // STAGE 1: Wireframe only
                         if (elapsed < stage1Duration) {
-                            // Wireframes at full opacity, solid invisible
-                            outerWireMat.opacity = 0.8;
-                            innerWireMat.opacity = 0.5;
+                            outerWireMat.opacity = 0.9;
+                            midWireMat.opacity = 0.6;
+                            innerWireMat.opacity = 0.4;
                             solidMaterial.opacity = 0;
                         }
-                        // STAGE 2: Solid fades in with purple/blue (3-6s)
+                        // STAGE 2: Solid fades in
                         else if (elapsed < stage1Duration + stage2Duration) {
                             const t = (elapsed - stage1Duration) / stage2Duration;
                             const eased = easeOutCubic(t);
 
-                            // Fade in solid mesh
-                            solidMaterial.opacity = 0.9 * eased;
+                            solidMaterial.opacity = 0.95 * eased;
+                            outerWireMat.opacity = 0.9 * (1 - eased * 0.8);
+                            midWireMat.opacity = 0.6 * (1 - eased * 0.8);
+                            innerWireMat.opacity = 0.4 * (1 - eased * 0.8);
 
-                            // Fade out wireframes
-                            outerWireMat.opacity = 0.8 * (1 - eased * 0.7);
-                            innerWireMat.opacity = 0.5 * (1 - eased * 0.7);
-
-                            // Colors stay as solid purple/blue
                             const colorAttr = solidGeo.attributes.color;
                             for (let i = 0; i < vertexCount * 3; i++) {
                                 colorAttr.array[i] = solidColors[i];
                             }
                             colorAttr.needsUpdate = true;
                         }
-                        // STAGE 3: Transform to Earth colors (6-10s)
+                        // STAGE 3: Earth colors
                         else if (elapsed < totalDuration) {
                             const t = (elapsed - stage1Duration - stage2Duration) / stage3Duration;
                             const eased = easeOutCubic(t);
 
-                            // Solid at full opacity
-                            solidMaterial.opacity = 0.9;
+                            solidMaterial.opacity = 0.95;
+                            outerWireMat.opacity = 0.18 * (1 - eased);
+                            midWireMat.opacity = 0.12 * (1 - eased);
+                            innerWireMat.opacity = 0.08 * (1 - eased);
 
-                            // Wireframes fade out completely
-                            outerWireMat.opacity = 0.8 * 0.3 * (1 - eased);
-                            innerWireMat.opacity = 0.5 * 0.3 * (1 - eased);
-
-                            // Morph colors from purple/blue to Earth
                             const colorAttr = solidGeo.attributes.color;
                             for (let i = 0; i < vertexCount * 3; i++) {
                                 colorAttr.array[i] = solidColors[i] + (earthColors[i] - solidColors[i]) * eased;
                             }
                             colorAttr.needsUpdate = true;
                         }
-                        // Animation complete
                         else {
-                            solidMaterial.opacity = 0.9;
+                            solidMaterial.opacity = 0.95;
                             outerWireMat.opacity = 0;
+                            midWireMat.opacity = 0;
                             innerWireMat.opacity = 0;
                         }
                     }
@@ -997,12 +1033,14 @@
                     // Auto rotation
                     solidMesh.rotation.y += 0.003;
                     outerWireframe.rotation.y += 0.003;
+                    midWireframe.rotation.y += 0.002;
                     innerWireframe.rotation.y -= 0.002;
 
                     // Mouse influence
                     const targetRotX = mouseY * 0.3;
                     solidMesh.rotation.x += (targetRotX - solidMesh.rotation.x) * 0.03;
                     outerWireframe.rotation.x += (targetRotX - outerWireframe.rotation.x) * 0.03;
+                    midWireframe.rotation.x += (targetRotX - midWireframe.rotation.x) * 0.03;
                     innerWireframe.rotation.x += (targetRotX - innerWireframe.rotation.x) * 0.03;
 
                     renderer.render(scene, camera);
@@ -1010,7 +1048,6 @@
 
                 animate();
 
-                // Resize handler
                 window.addEventListener('resize', () => {
                     camera.aspect = container.offsetWidth / 500;
                     camera.updateProjectionMatrix();
