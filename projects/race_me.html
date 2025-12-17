@@ -29,6 +29,16 @@
             font-family: 'Space Grotesk', monospace;
             user-select: none;
             min-height: 150px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            cursor: text;
+            outline: none;
+            border: 2px solid var(--glass-border);
+            transition: border 0.3s ease;
+        }
+
+        .quote-display:focus {
+            border-color: var(--glow-1);
         }
 
         .quote-display .char {
@@ -52,23 +62,6 @@
 
         body.eco-mode .quote-display .char.cursor {
             background: rgba(132, 204, 22, 0.3);
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--glass-border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Space Grotesk', monospace;
-            outline: none;
-            transition: border 0.3s ease;
-        }
-
-        .input-field:focus {
-            border-color: var(--glow-1);
         }
 
         .stats-grid {
@@ -189,16 +182,12 @@
                 </div>
 
                 <!-- Quote Display -->
-                <div class="quote-display glass-panel" id="quoteDisplay"></div>
+                <div class="quote-display glass-panel" id="quoteDisplay" tabindex="0"></div>
 
                 <!-- Instruction -->
                 <div class="instruction" id="instruction">
-                    Click below and start typing to begin the race!
+                    Click above and start typing to begin the race!
                 </div>
-
-                <!-- Input Field -->
-                <input type="text" class="input-field" id="inputField" placeholder="Start typing here..."
-                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
                 <!-- Stats Grid -->
                 <div class="stats-grid">
@@ -283,7 +272,6 @@
         let isTestActive = false;
 
         const quoteDisplay = document.getElementById('quoteDisplay');
-        const inputField = document.getElementById('inputField');
         const quoteInfo = document.getElementById('quoteInfo');
         const wpmDisplay = document.getElementById('wpmDisplay');
         const accuracyDisplay = document.getElementById('accuracyDisplay');
@@ -333,16 +321,27 @@
             drawGraph();
         }
 
-        // Handle input - FIXED to not shift text
-        inputField.addEventListener('input', (e) => {
-            const typedChar = e.target.value[e.target.value.length - 1];
-            const expectedChar = currentQuote.text[charIndex];
+        // Handle keydown - Direct typing on quote display (Monkeytype style)
+        quoteDisplay.addEventListener('keydown', (e) => {
+            // Ignore special keys
+            if (e.key.length > 1 && e.key !== 'Backspace') return;
 
-            if (!isTestActive && e.target.value.length > 0) {
+            // Prevent backspace from navigating back
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                return;
+            }
+
+            // Start test on first character
+            if (!isTestActive && e.key.length === 1) {
                 startTest();
             }
 
-            if (!typedChar) return;
+            // Only process single characters
+            if (e.key.length !== 1) return;
+
+            const typedChar = e.key;
+            const expectedChar = currentQuote.text[charIndex];
 
             const charElement = document.getElementById(`char${charIndex}`);
             charElement.classList.remove('cursor', 'incorrect');
@@ -361,17 +360,30 @@
                 // Incorrect character  
                 charElement.classList.add('incorrect');
                 errors++;
+                // Still advance to next character on error
+                charIndex++;
+                if (charIndex < currentQuote.text.length) {
+                    document.getElementById(`char${charIndex}`).classList.add('cursor');
+                } else {
+                    finishTest();
+                }
             }
+        });
 
-            // Clear input to keep it single-character
-            e.target.value = '';
+        // Focus quote display on click
+        quoteDisplay.addEventListener('click', () => {
+            quoteDisplay.focus();
+        });
+
+        // Focus on load
+        window.addEventListener('load', () => {
+            quoteDisplay.focus();
         });
 
         // Finish test
         function finishTest() {
             clearInterval(timerInterval);
             isTestActive = false;
-            inputField.disabled = true;
             instruction.innerHTML = '<span style="color: var(--glow-1); font-weight: 600;">🎉 Completed! Try again to beat your score.</span>';
 
             previousWpmHistory = [...wpmHistory];
@@ -387,18 +399,15 @@
             wpmHistory = [];
             isTestActive = false;
 
-            inputField.value = '';
-            inputField.disabled = false;
-            inputField.focus();
-
             wpmDisplay.textContent = '0';
             accuracyDisplay.textContent = '100';
             timeDisplay.textContent = '0';
             errorsDisplay.textContent = '0';
-            instruction.textContent = 'Click below and start typing to begin the race!';
+            instruction.textContent = 'Click above and start typing to begin the race!';
 
             displayQuote();
             drawGraph();
+            quoteDisplay.focus();
         }
 
         // New quote
