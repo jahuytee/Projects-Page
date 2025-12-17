@@ -43,7 +43,7 @@
             <div class="hero glass-panel">
                 <div class="hero-content-wrapper">
                     <div class="profile-img-container">
-                        <img src="assets/images/profile.jpg" alt="Jason Tran" class="profile-img">
+                        <img src="assets/images/profile.jpg" alt="Jason Tran (JT)" class="profile-img">
                     </div>
                     <div class="hero-text">
                         <h1>Jason Tran</h1>
@@ -795,7 +795,7 @@
         <div id="globeContainer" style="width: 100%; height: 500px; cursor: grab;"></div>
     </section>
 
-    <!-- Three.js Morphing Globe Script -->
+    <!-- Three.js 3-Stage Globe Script -->
     <script>
             (function () {
                 const container = document.getElementById('globeContainer');
@@ -810,111 +810,107 @@
                 container.appendChild(renderer.domElement);
 
                 const radius = 6;
+                const icoDetail = 4; // Higher subdivision for more defined look
 
-                // ===== MORPHING GEOMETRY =====
-                // Create icosahedron geometry that will morph to sphere
-                const icoDetail = 3; // subdivision level
-                const morphGeo = new THREE.IcosahedronGeometry(radius, icoDetail);
+                // ===== SOLID MESH (starts invisible, fades in during stage 2) =====
+                const solidGeo = new THREE.IcosahedronGeometry(radius, icoDetail);
+                const vertexCount = solidGeo.attributes.position.count;
 
-                // Store original icosahedron positions
-                const icoPositions = morphGeo.attributes.position.array.slice();
-
-                // Calculate smooth sphere positions (same vertex count)
-                const spherePositions = new Float32Array(icoPositions.length);
-                for (let i = 0; i < icoPositions.length; i += 3) {
-                    const x = icoPositions[i];
-                    const y = icoPositions[i + 1];
-                    const z = icoPositions[i + 2];
-                    const len = Math.sqrt(x * x + y * y + z * z);
-                    spherePositions[i] = (x / len) * radius;
-                    spherePositions[i + 1] = (y / len) * radius;
-                    spherePositions[i + 2] = (z / len) * radius;
-                }
-
-                // Create solid mesh with vertex colors (starts cyan, morphs to Earth colors)
-                const vertexCount = morphGeo.attributes.position.count;
-                const startColors = new Float32Array(vertexCount * 3);
-                const endColors = new Float32Array(vertexCount * 3);
+                // Three color sets: wireframe colors (stage 1), purple/blue (stage 2), Earth (stage 3)
+                const wireframeColors = new Float32Array(vertexCount * 3);
+                const solidColors = new Float32Array(vertexCount * 3);     // Purple/blue
+                const earthColors = new Float32Array(vertexCount * 3);      // Green/blue/white
                 const currentColors = new Float32Array(vertexCount * 3);
 
                 const cyanColor = new THREE.Color(0x22d3ee);
                 const purpleColor = new THREE.Color(0xa855f7);
+                const blueColor = new THREE.Color(0x3b82f6);
                 const oceanColor = new THREE.Color(0x0066aa);
-                const landColor = new THREE.Color(0x2d8f2d);
-                const iceColor = new THREE.Color(0xeeffff);
+                const landColor = new THREE.Color(0x22c55e);
+                const iceColor = new THREE.Color(0xf0f8ff);
 
+                const positions = solidGeo.attributes.position.array;
                 for (let i = 0; i < vertexCount; i++) {
-                    const y = spherePositions[i * 3 + 1];
+                    const y = positions[i * 3 + 1];
                     const lat = y / radius;
-
-                    // Start color: cyan/purple gradient
                     const t = (lat + 1) / 2;
-                    const startColor = cyanColor.clone().lerp(purpleColor, t);
-                    startColors[i * 3] = startColor.r;
-                    startColors[i * 3 + 1] = startColor.g;
-                    startColors[i * 3 + 2] = startColor.b;
 
-                    // End color: Earth colors
-                    let endColor;
-                    if (Math.abs(lat) > 0.8) {
-                        endColor = iceColor;
-                    } else if (Math.random() > 0.55) {
-                        endColor = landColor;
+                    // Wireframe colors (cyan to purple gradient)
+                    const wfColor = cyanColor.clone().lerp(purpleColor, t);
+                    wireframeColors[i * 3] = wfColor.r;
+                    wireframeColors[i * 3 + 1] = wfColor.g;
+                    wireframeColors[i * 3 + 2] = wfColor.b;
+
+                    // Solid colors (purple to blue gradient)
+                    const sColor = purpleColor.clone().lerp(cyanColor, t);
+                    solidColors[i * 3] = sColor.r;
+                    solidColors[i * 3 + 1] = sColor.g;
+                    solidColors[i * 3 + 2] = sColor.b;
+
+                    // Earth colors
+                    let eColor;
+                    if (Math.abs(lat) > 0.75) {
+                        eColor = iceColor;
+                    } else if (Math.random() > 0.5) {
+                        eColor = landColor;
                     } else {
-                        endColor = oceanColor;
+                        eColor = oceanColor;
                     }
-                    endColors[i * 3] = endColor.r;
-                    endColors[i * 3 + 1] = endColor.g;
-                    endColors[i * 3 + 2] = endColor.b;
+                    earthColors[i * 3] = eColor.r;
+                    earthColors[i * 3 + 1] = eColor.g;
+                    earthColors[i * 3 + 2] = eColor.b;
 
-                    // Initialize current colors to start colors
-                    currentColors[i * 3] = startColors[i * 3];
-                    currentColors[i * 3 + 1] = startColors[i * 3 + 1];
-                    currentColors[i * 3 + 2] = startColors[i * 3 + 2];
+                    // Start with wireframe colors
+                    currentColors[i * 3] = wireframeColors[i * 3];
+                    currentColors[i * 3 + 1] = wireframeColors[i * 3 + 1];
+                    currentColors[i * 3 + 2] = wireframeColors[i * 3 + 2];
                 }
 
-                morphGeo.setAttribute('color', new THREE.BufferAttribute(currentColors, 3));
+                solidGeo.setAttribute('color', new THREE.BufferAttribute(currentColors, 3));
 
-                const morphMaterial = new THREE.MeshBasicMaterial({
+                const solidMaterial = new THREE.MeshBasicMaterial({
                     vertexColors: true,
                     transparent: true,
-                    opacity: 0.85,
+                    opacity: 0,
                     side: THREE.DoubleSide
                 });
-                const morphMesh = new THREE.Mesh(morphGeo, morphMaterial);
-                scene.add(morphMesh);
+                const solidMesh = new THREE.Mesh(solidGeo, solidMaterial);
+                scene.add(solidMesh);
 
-                // ===== WIREFRAME OVERLAY (fades out) =====
-                const wireGeo = new THREE.IcosahedronGeometry(radius * 1.01, 1);
-                const wireMat = new THREE.MeshBasicMaterial({
+                // ===== OUTER WIREFRAME (cyan, prominent in stage 1) =====
+                const outerWireGeo = new THREE.IcosahedronGeometry(radius * 1.02, 2);
+                const outerWireMat = new THREE.MeshBasicMaterial({
                     color: 0x22d3ee,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.6
+                    opacity: 0.8
                 });
-                const wireframe = new THREE.Mesh(wireGeo, wireMat);
-                scene.add(wireframe);
+                const outerWireframe = new THREE.Mesh(outerWireGeo, outerWireMat);
+                scene.add(outerWireframe);
 
-                // Inner wireframe
-                const innerWireGeo = new THREE.IcosahedronGeometry(radius * 0.75, 1);
+                // ===== INNER WIREFRAME (purple) =====
+                const innerWireGeo = new THREE.IcosahedronGeometry(radius * 0.7, 1);
                 const innerWireMat = new THREE.MeshBasicMaterial({
                     color: 0xa855f7,
                     wireframe: true,
                     transparent: true,
-                    opacity: 0.35
+                    opacity: 0.5
                 });
                 const innerWireframe = new THREE.Mesh(innerWireGeo, innerWireMat);
                 scene.add(innerWireframe);
 
                 camera.position.z = 14;
 
-                // ===== ANIMATION STATE =====
-                let morphProgress = 0;
-                const morphDuration = 8; // seconds
+                // ===== ANIMATION TIMING =====
+                const stage1Duration = 3;  // Wireframe only (0-3s)
+                const stage2Duration = 3;  // Fade in solid blue/purple (3-6s)
+                const stage3Duration = 4;  // Transform to Earth colors (6-10s)
+                const totalDuration = stage1Duration + stage2Duration + stage3Duration;
+
                 let startTime = null;
                 let isInView = false;
 
-                // Intersection Observer to start animation when in view
+                // Intersection Observer
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && !isInView) {
@@ -933,46 +929,80 @@
                     mouseY = ((e.clientY - rect.top) / rect.height) * 2 - 1;
                 });
 
+                // Easing function
+                function easeOutCubic(t) {
+                    return 1 - Math.pow(1 - t, 3);
+                }
+
                 // Animation loop
                 function animate() {
                     requestAnimationFrame(animate);
 
-                    // Calculate morph progress (0 to 1 over morphDuration seconds)
                     if (isInView && startTime) {
                         const elapsed = (performance.now() - startTime) / 1000;
-                        morphProgress = Math.min(elapsed / morphDuration, 1);
 
-                        // Smooth easing
-                        const eased = 1 - Math.pow(1 - morphProgress, 3);
-
-                        // Morph vertices from icosahedron to sphere
-                        const posAttr = morphGeo.attributes.position;
-                        for (let i = 0; i < posAttr.count * 3; i++) {
-                            posAttr.array[i] = icoPositions[i] + (spherePositions[i] - icoPositions[i]) * eased;
+                        // STAGE 1: Wireframe only (0-3s)
+                        if (elapsed < stage1Duration) {
+                            // Wireframes at full opacity, solid invisible
+                            outerWireMat.opacity = 0.8;
+                            innerWireMat.opacity = 0.5;
+                            solidMaterial.opacity = 0;
                         }
-                        posAttr.needsUpdate = true;
+                        // STAGE 2: Solid fades in with purple/blue (3-6s)
+                        else if (elapsed < stage1Duration + stage2Duration) {
+                            const t = (elapsed - stage1Duration) / stage2Duration;
+                            const eased = easeOutCubic(t);
 
-                        // Morph colors from cyan/purple to Earth colors
-                        const colorAttr = morphGeo.attributes.color;
-                        for (let i = 0; i < colorAttr.count * 3; i++) {
-                            colorAttr.array[i] = startColors[i] + (endColors[i] - startColors[i]) * eased;
+                            // Fade in solid mesh
+                            solidMaterial.opacity = 0.9 * eased;
+
+                            // Fade out wireframes
+                            outerWireMat.opacity = 0.8 * (1 - eased * 0.7);
+                            innerWireMat.opacity = 0.5 * (1 - eased * 0.7);
+
+                            // Colors stay as solid purple/blue
+                            const colorAttr = solidGeo.attributes.color;
+                            for (let i = 0; i < vertexCount * 3; i++) {
+                                colorAttr.array[i] = solidColors[i];
+                            }
+                            colorAttr.needsUpdate = true;
                         }
-                        colorAttr.needsUpdate = true;
+                        // STAGE 3: Transform to Earth colors (6-10s)
+                        else if (elapsed < totalDuration) {
+                            const t = (elapsed - stage1Duration - stage2Duration) / stage3Duration;
+                            const eased = easeOutCubic(t);
 
-                        // Fade out wireframes
-                        wireMat.opacity = 0.6 * (1 - eased);
-                        innerWireMat.opacity = 0.35 * (1 - eased);
+                            // Solid at full opacity
+                            solidMaterial.opacity = 0.9;
+
+                            // Wireframes fade out completely
+                            outerWireMat.opacity = 0.8 * 0.3 * (1 - eased);
+                            innerWireMat.opacity = 0.5 * 0.3 * (1 - eased);
+
+                            // Morph colors from purple/blue to Earth
+                            const colorAttr = solidGeo.attributes.color;
+                            for (let i = 0; i < vertexCount * 3; i++) {
+                                colorAttr.array[i] = solidColors[i] + (earthColors[i] - solidColors[i]) * eased;
+                            }
+                            colorAttr.needsUpdate = true;
+                        }
+                        // Animation complete
+                        else {
+                            solidMaterial.opacity = 0.9;
+                            outerWireMat.opacity = 0;
+                            innerWireMat.opacity = 0;
+                        }
                     }
 
                     // Auto rotation
-                    morphMesh.rotation.y += 0.003;
-                    wireframe.rotation.y += 0.003;
+                    solidMesh.rotation.y += 0.003;
+                    outerWireframe.rotation.y += 0.003;
                     innerWireframe.rotation.y -= 0.002;
 
                     // Mouse influence
                     const targetRotX = mouseY * 0.3;
-                    morphMesh.rotation.x += (targetRotX - morphMesh.rotation.x) * 0.03;
-                    wireframe.rotation.x += (targetRotX - wireframe.rotation.x) * 0.03;
+                    solidMesh.rotation.x += (targetRotX - solidMesh.rotation.x) * 0.03;
+                    outerWireframe.rotation.x += (targetRotX - outerWireframe.rotation.x) * 0.03;
                     innerWireframe.rotation.x += (targetRotX - innerWireframe.rotation.x) * 0.03;
 
                     renderer.render(scene, camera);
