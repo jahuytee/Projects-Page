@@ -652,6 +652,37 @@ h1 {
     color: var(--accent-primary);
 }
 
+/* Live Clock */
+#liveClock {
+    font-family: 'Space Grotesk', monospace;
+    font-weight: 600;
+    color: var(--glow-1);
+}
+
+/* Spotify Widget */
+.spotify-widget {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+}
+
+.spotify-widget h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.spotify-widget iframe {
+    border-radius: 12px;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.spotify-widget:hover iframe {
+    opacity: 1;
+}
+
 /* Contact Form */
 .form-group {
     margin-bottom: 1.5rem;
