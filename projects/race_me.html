@@ -323,6 +323,11 @@
 
         // Handle keydown - Direct typing on quote display (Monkeytype style)
         quoteDisplay.addEventListener('keydown', (e) => {
+            // Prevent spacebar from scrolling page
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+
             // Ignore special keys
             if (e.key.length > 1 && e.key !== 'Backspace') return;
 
