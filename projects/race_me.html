@@ -20,45 +20,38 @@
 
         .quote-display {
             font-size: 1.5rem;
-            line-height: 2.5rem;
-            letter-spacing: 0.05em;
+            line-height: 2.2rem;
+            letter-spacing: 0.02em;
             margin: 2rem 0;
             padding: 2rem;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
             font-family: 'Space Grotesk', monospace;
             user-select: none;
+            min-height: 150px;
         }
 
-        .quote-display span {
+        .quote-display .char {
             position: relative;
+            color: var(--text-secondary);
         }
 
-        .quote-display span.correct {
-            color: var(--glow-1);
+        .quote-display .char.correct {
+            color: var(--text-primary);
         }
 
-        .quote-display span.incorrect {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.2);
+        .quote-display .char.incorrect {
+            color: #ffffff;
+            background: #ef4444;
+            border-radius: 2px;
         }
 
-        .quote-display span.current {
-            border-left: 2px solid var(--glow-1);
-            animation: blink 1s infinite;
+        .quote-display .char.cursor {
+            background: rgba(34, 211, 238, 0.3);
         }
 
-        @keyframes blink {
-
-            0%,
-            49% {
-                opacity: 1;
-            }
-
-            50%,
-            100% {
-                opacity: 0;
-            }
+        body.eco-mode .quote-display .char.cursor {
+            background: rgba(132, 204, 22, 0.3);
         }
 
         .input-field {
@@ -182,7 +175,7 @@
                     </p>
                     <div style="margin-top: 1rem;">
                         <span class="pb-badge">
-                            <i class="fa-solid fa-trophy"></i> My Best: <span id="myBest">85</span> WPM
+                            <i class="fa-solid fa-trophy"></i> My Best: <span id="myBest">164</span> WPM
                         </span>
                     </div>
                 </div>
@@ -191,13 +184,11 @@
             <div class="typing-container">
                 <!-- Quote Info -->
                 <div class="quote-info" id="quoteInfo">
-                    <i class="fa-solid fa-film"></i> "Do or do not. There is no try." - Yoda, Star Wars
+                    <i class="fa-solid fa-film"></i> Loading quote...
                 </div>
 
                 <!-- Quote Display -->
-                <div class="quote-display glass-panel" id="quoteDisplay">
-                    Do or do not. There is no try.
-                </div>
+                <div class="quote-display glass-panel" id="quoteDisplay"></div>
 
                 <!-- Instruction -->
                 <div class="instruction" id="instruction">
@@ -269,16 +260,16 @@
     </main>
 
     <script>
-        // Movie quotes
+        // Movie quotes (3-line)
         const quotes = [
-            { text: "Do or do not. There is no try.", film: "Yoda, Star Wars" },
-            { text: "That's no moon. It's a space station.", film: "Star Wars" },
             { text: "We used to look up at the sky and wonder at our place in the stars. Now we just look down and worry about our place in the dirt.", film: "Interstellar" },
-            { text: "You mustn't be afraid to dream a little bigger, darling.", film: "Inception" },
-            { text: "I'm going to make him an offer he can't refuse.", film: "The Godfather" },
-            { text: "May the Force be with you.", film: "Star Wars" },
-            { text: "Here's looking at you, kid.", film: "Casablanca" },
-            { text: "The greatest teacher, failure is.", film: "Yoda, Star Wars" },
+            { text: "You mustn't be afraid to dream a little bigger, darling. The world is full of possibilities if you only reach for them. Sometimes all it takes is inception.", film: "Inception" },
+            { text: "Do or do not. There is no try. Fear is the path to the dark side. Fear leads to anger, anger leads to hate, hate leads to suffering.", film: "Yoda, Star Wars" },
+            { text: "I'm going to make him an offer he can't refuse. A man who doesn't spend time with his family can never be a real man. Leave the gun, take the cannoli.", film: "The Godfather" },
+            { text: "May the Force be with you. In my experience there is no such thing as luck. Your eyes can deceive you, don't trust them.", film: "Star Wars" },
+            { text: "The greatest teacher, failure is. Pass on what you have learned. Truly wonderful the mind of a child is. Adventure, excitement, a Jedi craves not these things.", film: "Yoda, Star Wars" },
+            { text: "Here's looking at you, kid. Of all the gin joints in all the towns in all the world, she walks into mine. We'll always have Paris.", film: "Casablanca" },
+            { text: "That's no moon. It's a space station. I have a bad feeling about this. The Force will be with you, always.", film: "Star Wars" },
         ];
 
         let currentQuote = quotes[0];
@@ -300,11 +291,12 @@
         const graphCanvas = document.getElementById('graphCanvas');
         const instruction = document.getElementById('instruction');
 
-        // Initialize quote display
+        // Initialize quote display - shows FULL text with spans
         function displayQuote() {
             quoteDisplay.innerHTML = currentQuote.text.split('').map((char, i) =>
-                `<span id="char${i}">${char}</span>`
+                `<span class="char" id="char${i}">${char === ' ' ? '&nbsp;' : char}</span>`
             ).join('');
+            document.getElementById('char0').classList.add('cursor');
             quoteInfo.innerHTML = `<i class="fa-solid fa-film"></i> "${currentQuote.text}" - ${currentQuote.film}`;
         }
 
@@ -340,30 +332,38 @@
             drawGraph();
         }
 
-        // Handle input
+        // Handle input - FIXED to not shift text
         inputField.addEventListener('input', (e) => {
-            const typedText = e.target.value;
-            const currentChar = currentQuote.text[charIndex];
+            const typedChar = e.target.value[e.target.value.length - 1];
+            const expectedChar = currentQuote.text[charIndex];
 
-            if (!isTestActive && typedText.length > 0) {
+            if (!isTestActive && e.target.value.length > 0) {
                 startTest();
             }
 
-            if (typedText.endsWith(currentChar)) {
-                document.getElementById(`char${charIndex}`).classList.add('correct');
+            if (!typedChar) return;
+
+            const charElement = document.getElementById(`char${charIndex}`);
+            charElement.classList.remove('cursor', 'incorrect');
+
+            if (typedChar === expectedChar) {
+                // Correct character
+                charElement.classList.add('correct');
                 charIndex++;
 
                 if (charIndex < currentQuote.text.length) {
-                    document.getElementById(`char${charIndex}`).classList.add('current');
-                }
-
-                if (charIndex === currentQuote.text.length) {
+                    document.getElementById(`char${charIndex}`).classList.add('cursor');
+                } else {
                     finishTest();
                 }
-            } else if (typedText.length > 0) {
-                document.getElementById(`char${charIndex}`).classList.add('incorrect');
+            } else {
+                // Incorrect character  
+                charElement.classList.add('incorrect');
                 errors++;
             }
+
+            // Clear input to keep it single-character
+            e.target.value = '';
         });
 
         // Finish test
