@@ -1623,9 +1623,9 @@
             }
         }
 
-        // Update immediately and every 30 seconds
+        // Update immediately and every 5 seconds (more responsive)
         updateNowPlaying();
-        setInterval(updateNowPlaying, 30000);
+        setInterval(updateNowPlaying, 5000);
 
         // Smooth progress bar animation (updates every second)
         setInterval(() => {
