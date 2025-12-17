@@ -523,7 +523,17 @@ h1 {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
     gap: 2rem;
-    align-items: start;
+    align-items: stretch;
+}
+
+.contact-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact-left-column .glass-panel {
+    flex: 1;
 }
 
 .contact-info {
