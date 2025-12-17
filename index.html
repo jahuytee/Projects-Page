@@ -808,6 +808,27 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Social Icons -->
+            <div class="social-icons-row reveal">
+                <a href="https://github.com/jahuytee" target="_blank" class="social-icon-link" title="GitHub">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/jhtran1" target="_blank" class="social-icon-link" title="LinkedIn">
+                    <i class="fa-brands fa-linkedin"></i>
+                </a>
+                <a href="https://open.spotify.com/user/YOUR_SPOTIFY_ID" target="_blank" class="social-icon-link"
+                    title="Spotify">
+                    <i class="fa-brands fa-spotify"></i>
+                </a>
+                <button class="social-icon-link" onclick="copyToClipboard('YOUR_DISCORD_USERNAME', this)"
+                    title="Discord - Click to copy">
+                    <i class="fa-brands fa-discord"></i>
+                </button>
+                <a href="https://YOUR_SLACK_WORKSPACE.slack.com" target="_blank" class="social-icon-link" title="Slack">
+                    <i class="fa-brands fa-slack"></i>
+                </a>
+            </div>
         </section>
     </main>
 
@@ -1471,6 +1492,22 @@
         }
         updateClock();
         setInterval(updateClock, 1000);
+
+        // Copy to Clipboard Function
+        function copyToClipboard(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show copied feedback
+                const icon = element.querySelector('i');
+                const originalClass = icon.className;
+                icon.className = 'fa-solid fa-check';
+                element.style.color = '#22c55e';
+
+                setTimeout(() => {
+                    icon.className = originalClass;
+                    element.style.color = '';
+                }, 1500);
+            });
+        }
     </script>
 </body>
 
