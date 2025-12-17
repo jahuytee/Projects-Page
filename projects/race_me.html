@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Me - Jason Tran</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .typing-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quote-display {
+            font-size: 1.5rem;
+            line-height: 2.5rem;
+            letter-spacing: 0.05em;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            font-family: 'Space Grotesk', monospace;
+            user-select: none;
+        }
+
+        .quote-display span {
+            position: relative;
+        }
+
+        .quote-display span.correct {
+            color: var(--glow-1);
+        }
+
+        .quote-display span.incorrect {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .quote-display span.current {
+            border-left: 2px solid var(--glow-1);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            49% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', monospace;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--glow-1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--glow-1);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .graph-container {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 200px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pb-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--glow-1), var(--glow-2));
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .quote-info {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .instruction {
+            text-align: center;
+            color: var(--text-secondary);
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="../index.html#about">About Me</a></li>
+            <li><a href="../index.html#skills">Skills</a></li>
+            <li><a href="../index.html#experience">Experience</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="race_me.html" class="active">Race Me</a></li>
+            <li><a href="../index.html#contact">Contact Me</a></li>
+        </ul>
+    </nav>
+
+    <button id="themeToggle" class="theme-toggle">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-label">Mode</span>
+    </button>
+
+    <main class="container" style="padding-top: 70px; max-width: 900px;">
+        <section class="detail-section">
+            <div class="header-main glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <div style="text-align: center;">
+                    <h1 style="margin-bottom: 0.5rem;">⚡ Race Me</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                        Think you can type faster than me? Prove it!
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="pb-badge">
+                            <i class="fa-solid fa-trophy"></i> My Best: <span id="myBest">85</span> WPM
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-container">
+                <!-- Quote Info -->
+                <div class="quote-info" id="quoteInfo">
+                    <i class="fa-solid fa-film"></i> "Do or do not. There is no try." - Yoda, Star Wars
+                </div>
+
+                <!-- Quote Display -->
+                <div class="quote-display glass-panel" id="quoteDisplay">
+                    Do or do not. There is no try.
+                </div>
+
+                <!-- Instruction -->
+                <div class="instruction" id="instruction">
+                    Click below and start typing to begin the race!
+                </div>
+
+                <!-- Input Field -->
+                <input type="text" class="input-field" id="inputField" placeholder="Start typing here..."
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="wpmDisplay">0</div>
+                        <div class="stat-label">WPM</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="accuracyDisplay">100</div>
+                        <div class="stat-label">Accuracy %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="timeDisplay">0</div>
+                        <div class="stat-label">Time (s)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="errorsDisplay">0</div>
+                        <div class="stat-label">Errors</div>
+                    </div>
+                </div>
+
+                <!-- Speed Graph -->
+                <div class="graph-container">
+                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">
+                        <i class="fa-solid fa-chart-line"></i> Speed Over Time
+                    </h3>
+                    <canvas id="graphCanvas" class="graph-canvas"></canvas>
+                    <div
+                        style="margin-top: 1rem; display: flex; gap: 1.5rem; justify-content: center; font-size: 0.9rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 20px; height: 3px; background: var(--glow-1);"></div>
+                            <span style="color: var(--text-secondary);">Current</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 20px; height: 3px; background: var(--text-secondary); opacity: 0.5;">
+                            </div>
+                            <span style="color: var(--text-secondary);">Previous</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls">
+                    <button class="btn" onclick="resetTest()">
+                        <i class="fa-solid fa-rotate-right"></i> Try Again
+                    </button>
+                    <button class="btn" onclick="newQuote()">
+                        <i class="fa-solid fa-shuffle"></i> New Quote
+                    </button>
+                </div>
+
+                <!-- Back Button -->
+                <div style="margin-top: 3rem; text-align: center;">
+                    <a href="../index.html#projects" class="btn">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Portfolio
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Movie quotes
+        const quotes = [
+            { text: "Do or do not. There is no try.", film: "Yoda, Star Wars" },
+            { text: "That's no moon. It's a space station.", film: "Star Wars" },
+            { text: "We used to look up at the sky and wonder at our place in the stars. Now we just look down and worry about our place in the dirt.", film: "Interstellar" },
+            { text: "You mustn't be afraid to dream a little bigger, darling.", film: "Inception" },
+            { text: "I'm going to make him an offer he can't refuse.", film: "The Godfather" },
+            { text: "May the Force be with you.", film: "Star Wars" },
+            { text: "Here's looking at you, kid.", film: "Casablanca" },
+            { text: "The greatest teacher, failure is.", film: "Yoda, Star Wars" },
+        ];
+
+        let currentQuote = quotes[0];
+        let startTime = null;
+        let timerInterval = null;
+        let charIndex = 0;
+        let errors = 0;
+        let wpmHistory = [];
+        let previousWpmHistory = [];
+        let isTestActive = false;
+
+        const quoteDisplay = document.getElementById('quoteDisplay');
+        const inputField = document.getElementById('inputField');
+        const quoteInfo = document.getElementById('quoteInfo');
+        const wpmDisplay = document.getElementById('wpmDisplay');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const errorsDisplay = document.getElementById('errorsDisplay');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const instruction = document.getElementById('instruction');
+
+        // Initialize quote display
+        function displayQuote() {
+            quoteDisplay.innerHTML = currentQuote.text.split('').map((char, i) =>
+                `<span id="char${i}">${char}</span>`
+            ).join('');
+            quoteInfo.innerHTML = `<i class="fa-solid fa-film"></i> "${currentQuote.text}" - ${currentQuote.film}`;
+        }
+
+        // Start test
+        function startTest() {
+            if (!isTestActive) {
+                isTestActive = true;
+                startTime = Date.now();
+                wpmHistory = [];
+                instruction.textContent = 'Type as fast as you can!';
+
+                timerInterval = setInterval(updateStats, 100);
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            if (!startTime) return;
+
+            const timeElapsed = (Date.now() - startTime) / 1000;
+            timeDisplay.textContent = timeElapsed.toFixed(1);
+
+            const wordsTyped = charIndex / 5;
+            const wpm = Math.round((wordsTyped / timeElapsed) * 60) || 0;
+            wpmDisplay.textContent = wpm;
+
+            const accuracy = charIndex > 0 ? Math.round(((charIndex - errors) / charIndex) * 100) : 100;
+            accuracyDisplay.textContent = accuracy;
+
+            errorsDisplay.textContent = errors;
+
+            wpmHistory.push({ time: timeElapsed, wpm });
+            drawGraph();
+        }
+
+        // Handle input
+        inputField.addEventListener('input', (e) => {
+            const typedText = e.target.value;
+            const currentChar = currentQuote.text[charIndex];
+
+            if (!isTestActive && typedText.length > 0) {
+                startTest();
+            }
+
+            if (typedText.endsWith(currentChar)) {
+                document.getElementById(`char${charIndex}`).classList.add('correct');
+                charIndex++;
+
+                if (charIndex < currentQuote.text.length) {
+                    document.getElementById(`char${charIndex}`).classList.add('current');
+                }
+
+                if (charIndex === currentQuote.text.length) {
+                    finishTest();
+                }
+            } else if (typedText.length > 0) {
+                document.getElementById(`char${charIndex}`).classList.add('incorrect');
+                errors++;
+            }
+        });
+
+        // Finish test
+        function finishTest() {
+            clearInterval(timerInterval);
+            isTestActive = false;
+            inputField.disabled = true;
+            instruction.innerHTML = '<span style="color: var(--glow-1); font-weight: 600;">🎉 Completed! Try again to beat your score.</span>';
+
+            previousWpmHistory = [...wpmHistory];
+            localStorage.setItem('previousWpmHistory', JSON.stringify(previousWpmHistory));
+        }
+
+        // Reset test
+        function resetTest() {
+            clearInterval(timerInterval);
+            startTime = null;
+            charIndex = 0;
+            errors = 0;
+            wpmHistory = [];
+            isTestActive = false;
+
+            inputField.value = '';
+            inputField.disabled = false;
+            inputField.focus();
+
+            wpmDisplay.textContent = '0';
+            accuracyDisplay.textContent = '100';
+            timeDisplay.textContent = '0';
+            errorsDisplay.textContent = '0';
+            instruction.textContent = 'Click below and start typing to begin the race!';
+
+            displayQuote();
+            drawGraph();
+        }
+
+        // New quote
+        function newQuote() {
+            const newQuoteObj = quotes[Math.floor(Math.random() * quotes.length)];
+            currentQuote = newQuoteObj;
+            previousWpmHistory = [];
+            resetTest();
+        }
+
+        // Draw graph
+        function drawGraph() {
+            const ctx = graphCanvas.getContext('2d');
+            const width = graphCanvas.width = graphCanvas.offsetWidth * 2;
+            const height = graphCanvas.height = graphCanvas.offsetHeight * 2;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const maxWpm = Math.max(...wpmHistory.map(d => d.wpm), ...previousWpmHistory.map(d => d.wpm), 100);
+            const maxTime = Math.max(...wpmHistory.map(d => d.time), ...previousWpmHistory.map(d => d.time), 1);
+
+            // Draw previous attempt (ghost)
+            if (previousWpmHistory.length > 0) {
+                ctx.strokeStyle = 'rgba(136, 136, 136, 0.5)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                previousWpmHistory.forEach((point, i) => {
+                    const x = (point.time / maxTime) * width;
+                    const y = height - (point.wpm / maxWpm) * height;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
+
+            // Draw current attempt
+            if (wpmHistory.length > 0) {
+                const colors = document.body.classList.contains('eco-mode')
+                    ? ['#84cc16', '#10b981', '#22c55e']
+                    : ['#22d3ee', '#818cf8', '#a855f7'];
+
+                ctx.strokeStyle = colors[0];
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                wpmHistory.forEach((point, i) => {
+                    const x = (point.time / maxTime) * width;
+                    const y = height - (point.wpm / maxWpm) * height;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
+        }
+
+        // Load previous history
+        const savedHistory = localStorage.getItem('previousWpmHistory');
+        if (savedHistory) {
+            previousWpmHistory = JSON.parse(savedHistory);
+        }
+
+        // Initialize
+        displayQuote();
+        drawGraph();
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const toggleIcon = themeToggle.querySelector('.toggle-icon');
+        const toggleLabel = themeToggle.querySelector('.toggle-label');
+
+        if (localStorage.getItem('theme') === 'eco') {
+            document.body.classList.add('eco-mode');
+            toggleIcon.textContent = '🌱';
+            toggleLabel.textContent = 'Eco';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('eco-mode');
+            const isEco = document.body.classList.contains('eco-mode');
+            toggleIcon.textContent = isEco ? '🌱' : '🌙';
+            toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
+            localStorage.setItem('theme', isEco ? 'eco' : 'tech');
+            drawGraph();
+        });
+
+        // Particle Canvas (same as other pages)
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+        const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
+        const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.colorIndex = Math.floor(Math.random() * 3);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
+                ctx.fillStyle = colors[this.colorIndex];
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
