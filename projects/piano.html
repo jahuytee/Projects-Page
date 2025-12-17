@@ -14,28 +14,42 @@
 </head>
 
 <body>
-    <div class="project-detail-container">
-        <!-- Header -->
-        <header class="detail-header">
-            <div class="header-top">
-                <a href="../index.html" class="btn btn-sm btn-glass back-btn"><i class="fa-solid fa-arrow-left"></i>
-                    Back to Home</a>
-            </div>
-            <div class="header-main">
-                <h1>Voltage-to-Frequency Piano</h1>
-            </div>
-            <div class="detail-meta">
-                <span><i class="fa-regular fa-calendar"></i> Fall 2024</span>
-                <span class="tech-tag">Analog Circuits</span>
-                <span class="tech-tag">LTSpice</span>
-                <span class="tech-tag">Signal Processing</span>
-            </div>
-        </header>
+    <canvas id="particleCanvas"></canvas>
 
-        <!-- Main Content Grid -->
-        <div class="detail-grid">
+    <nav>
+        <ul class="nav-links">
+            <li><a href="../index.html#about">About Me</a></li>
+            <li><a href="../index.html#skills">Skills</a></li>
+            <li><a href="../index.html#experience">Experience</a></li>
+            <li><a href="../index.html#projects">Projects</a></li>
+            <li><a href="../index.html#contact">Contact Me</a></li>
+        </ul>
+    </nav>
 
-            <!-- Description & Logic -->
+    <button id="themeToggle" class="theme-toggle">
+        <span class="toggle-icon">🌙</span>
+        <span class="toggle-label">Mode</span>
+    </button>
+
+    <main class="container" style="padding-top: var(--nav-height); max-width: 1000px;">
+        <section class="detail-section">
+            <div class="header-main glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h1>Voltage-to-Frequency Piano</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem;">
+                        Analog circuit design for musical note generation
+                    </p>
+                </div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <span class="tech-tag">
+                        <i class="fa-regular fa-calendar"></i> Fall 2024
+                    </span>
+                    <span class="tech-tag">Analog Circuits</span>
+                    <span class="tech-tag">LTSpice</span>
+                    <span class="tech-tag">Signal Processing</span>
+                </div>
+            </div>
+
             <!-- Introduction -->
             <section class="detail-section glass-panel">
                 <h2>1. Introduction</h2>
@@ -623,7 +637,88 @@
                 </div>
             </section>
 
-        </div>
+            <!-- Back Button -->
+            <div style="margin-top: 3rem; text-align: center;">
+                <a href="../index.html#projects" class="btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Projects
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const toggleIcon = themeToggle.querySelector('.toggle-icon');
+        const toggleLabel = themeToggle.querySelector('.toggle-label');
+
+        if (localStorage.getItem('theme') === 'eco') {
+            document.body.classList.add('eco-mode');
+            toggleIcon.textContent = '🌱';
+            toggleLabel.textContent = 'Eco';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('eco-mode');
+            const isEco = document.body.classList.contains('eco-mode');
+            toggleIcon.textContent = isEco ? '🌱' : '🌙';
+            toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
+            localStorage.setItem('theme', isEco ? 'eco' : 'tech');
+        });
+
+        // Particle Canvas
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+        const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
+        const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.colorIndex = Math.floor(Math.random() * 3);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
+                ctx.fillStyle = colors[this.colorIndex];
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 
 </html>
