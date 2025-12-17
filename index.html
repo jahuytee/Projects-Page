@@ -1561,25 +1561,31 @@
 
                 if (data.isPlaying) {
                     content.innerHTML = `
-                        <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 0.5rem 0;">
                             <img src="${data.albumImageUrl}" alt="Album Art" 
-                                 style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                            <div style="flex: 1; min-width: 0;">
+                                 style="width: 120px; height: 120px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4);">
+                            <div style="text-align: center; width: 100%;">
                                 <a href="${data.songUrl}" target="_blank" 
-                                   style="color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.95rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                   style="color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 1.05rem; display: block; margin-bottom: 0.4rem; transition: color 0.2s;">
                                     ${data.title}
                                 </a>
-                                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0.25rem 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 0.3rem 0;">
                                     ${data.artist}
+                                </p>
+                                <p style="color: var(--text-tertiary); font-size: 0.8rem; margin: 0; font-style: italic;">
+                                    ${data.album}
                                 </p>
                             </div>
                         </div>
                     `;
                 } else {
                     content.innerHTML = `
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin: 0;">
-                            Not playing anything right now
-                        </p>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem 0;">
+                            <i class="fa-solid fa-music" style="font-size: 3rem; color: var(--text-tertiary); opacity: 0.3;"></i>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin: 0;">
+                                Not playing anything right now
+                            </p>
+                        </div>
                     `;
                 }
             } catch (error) {
