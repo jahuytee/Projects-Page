@@ -318,325 +318,255 @@
             errorsDisplay.textContent = errors;
 
             wpmHistory.push({ time: timeElapsed, wpm });
-            // Load previous history
-            const savedHistory = localStorage.getItem('previousWpmHistory');
-            if (savedHistory) {
-                previousWpmHistory = JSON.parse(savedHistory);
-            }
-
-            // Initialize
-            displayQuote();
             drawGraph();
+        }
 
-            // Theme Toggle
-            const themeToggle = document.getElementById('themeToggle');
-            const toggleIcon = themeToggle.querySelector('.toggle-icon');
-            const toggleLabel = themeToggle.querySelector('.toggle-label');
-
-            if (localStorage.getItem('theme') === 'eco') {
-                document.body.classList.add('eco-mode');
-                toggleIcon.textContent = '🌱';
-                toggleLabel.textContent = 'Eco';
+        // Handle keydown - Direct typing on quote display (Monkeytype style)
+        quoteDisplay.addEventListener('keydown', (e) => {
+            // Don't allow input after test is finished
+            if (!isTestActive && charIndex >= currentQuote.text.length) {
+                e.preventDefault();
+                return;
             }
 
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('eco-mode');
-                const isEco = document.body.classList.contains('eco-mode');
-                toggleIcon.textContent = isEco ? '🌱' : '🌙';
-                toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
-                localStorage.setItem('theme', isEco ? 'eco' : 'tech');
-                drawGraph();
-            });
-
-            // Particle Canvas (same as other pages)
-            const canvas = document.getElementById('particleCanvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            const particleCount = 80;
-            const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
-            const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.vx = (Math.random() - 0.5) * 0.5;
-                    this.vy = (Math.random() - 0.5) * 0.5;
-                    this.radius = Math.random() * 2 + 1;
-                    this.colorIndex = Math.floor(Math.random() * 3);
-                }
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-                }
-                draw() {
-                    const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
-                    ctx.fillStyle = colors[this.colorIndex];
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+            // Prevent spacebar from scrolling page
+            if (e.key === ' ') {
+                e.preventDefault();
             }
 
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
+            // Handle backspace - go back one character
+            if (e.key === 'Backspace') {
+                e.preventDefault();
 
-            // Handle keydown - Direct typing on quote display (Monkeytype style)
-            quoteDisplay.addEventListener('keydown', (e) => {
-                // Don't allow input after test is finished
-                if (!isTestActive && charIndex >= currentQuote.text.length) {
-                    e.preventDefault();
-                    return;
-                }
-
-                // Prevent spacebar from scrolling page
-                if (e.key === ' ') {
-                    e.preventDefault();
-                }
-
-                // Handle backspace - go back one character
-                if (e.key === 'Backspace') {
-                    e.preventDefault();
-
-                    if (charIndex > 0) {
-                        // Move back one character
-                        const currentCharElement = document.getElementById(`char${charIndex}`);
-                        if (currentCharElement) {
-                            currentCharElement.classList.remove('cursor');
-                        }
-
-                        charIndex--;
-
-                        const prevCharElement = document.getElementById(`char${charIndex}`);
-                        prevCharElement.classList.remove('correct', 'incorrect');
-                        prevCharElement.classList.add('cursor');
+                if (charIndex > 0) {
+                    // Move back one character
+                    const currentCharElement = document.getElementById(`char${charIndex}`);
+                    if (currentCharElement) {
+                        currentCharElement.classList.remove('cursor');
                     }
-                    return;
+
+                    charIndex--;
+
+                    const prevCharElement = document.getElementById(`char${charIndex}`);
+                    prevCharElement.classList.remove('correct', 'incorrect');
+                    prevCharElement.classList.add('cursor');
                 }
+                return;
+            }
 
-                // Ignore other special keys
-                if (e.key.length > 1) return;
+            // Ignore other special keys
+            if (e.key.length > 1) return;
 
-                // Start test on first character
-                if (!isTestActive && e.key.length === 1) {
-                    startTest();
-                }
+            // Start test on first character
+            if (!isTestActive && e.key.length === 1) {
+                startTest();
+            }
 
-                // Only process single characters
-                if (e.key.length !== 1) return;
+            // Only process single characters
+            if (e.key.length !== 1) return;
 
-                const typedChar = e.key;
-                const expectedChar = currentQuote.text[charIndex];
+            const typedChar = e.key;
+            const expectedChar = currentQuote.text[charIndex];
 
-                const charElement = document.getElementById(`char${charIndex}`);
-                charElement.classList.remove('cursor', 'incorrect');
+            const charElement = document.getElementById(`char${charIndex}`);
+            charElement.classList.remove('cursor', 'incorrect');
 
-                if (typedChar === expectedChar) {
-                    // Correct character
-                    charElement.classList.add('correct');
-                    charIndex++;
+            if (typedChar === expectedChar) {
+                // Correct character
+                charElement.classList.add('correct');
+                charIndex++;
 
-                    if (charIndex < currentQuote.text.length) {
-                        document.getElementById(`char${charIndex}`).classList.add('cursor');
-                    } else {
-                        finishTest();
-                    }
+                if (charIndex < currentQuote.text.length) {
+                    document.getElementById(`char${charIndex}`).classList.add('cursor');
                 } else {
-                    // Incorrect character  
-                    charElement.classList.add('incorrect');
-                    errors++;
-                    // Still advance to next character on error
-                    charIndex++;
-                    if (charIndex < currentQuote.text.length) {
-                        document.getElementById(`char${charIndex}`).classList.add('cursor');
-                    } else {
-                        finishTest();
-                    }
+                    finishTest();
                 }
-            });
-
-            // Focus quote display on click
-            quoteDisplay.addEventListener('click', () => {
-                quoteDisplay.focus();
-            });
-
-            // Focus on load
-            window.addEventListener('load', () => {
-                quoteDisplay.focus();
-            });
-
-            // Finish test
-            function finishTest() {
-                clearInterval(timerInterval);
-                isTestActive = false;
-                instruction.innerHTML = '<span style="color: var(--glow-1); font-weight: 600;">🎉 Completed! Try again to beat your score.</span>';
-
-                previousWpmHistory = [...wpmHistory];
-                localStorage.setItem('previousWpmHistory', JSON.stringify(previousWpmHistory));
-            }
-
-            // Reset test
-            function resetTest() {
-                clearInterval(timerInterval);
-                startTime = null;
-                charIndex = 0;
-                errors = 0;
-                wpmHistory = [];
-                isTestActive = false;
-
-                wpmDisplay.textContent = '0';
-                accuracyDisplay.textContent = '100';
-                timeDisplay.textContent = '0';
-                errorsDisplay.textContent = '0';
-                instruction.textContent = 'Click above and start typing to begin the race!';
-
-                displayQuote();
-                drawGraph();
-                quoteDisplay.focus();
-            }
-
-            // New quote
-            function newQuote() {
-                const newQuoteObj = quotes[Math.floor(Math.random() * quotes.length)];
-                currentQuote = newQuoteObj;
-                previousWpmHistory = [];
-                resetTest();
-            }
-
-            // Draw graph
-            function drawGraph() {
-                const ctx = graphCanvas.getContext('2d');
-                const width = graphCanvas.width = graphCanvas.offsetWidth * 2;
-                const height = graphCanvas.height = graphCanvas.offsetHeight * 2;
-
-                ctx.clearRect(0, 0, width, height);
-
-                const maxWpm = Math.max(...wpmHistory.map(d => d.wpm), ...previousWpmHistory.map(d => d.wpm), 100);
-                const maxTime = Math.max(...wpmHistory.map(d => d.time), ...previousWpmHistory.map(d => d.time), 1);
-
-                // Draw previous attempt (ghost)
-                if (previousWpmHistory.length > 0) {
-                    ctx.strokeStyle = 'rgba(136, 136, 136, 0.5)';
-                    ctx.lineWidth = 4;
-                    ctx.beginPath();
-                    previousWpmHistory.forEach((point, i) => {
-                        const x = (point.time / maxTime) * width;
-                        const y = height - (point.wpm / maxWpm) * height;
-                        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-                    });
-                    ctx.stroke();
-                }
-
-                // Draw current attempt
-                if (wpmHistory.length > 0) {
-                    const colors = document.body.classList.contains('eco-mode')
-                        ? ['#84cc16', '#10b981', '#22c55e']
-                        : ['#22d3ee', '#818cf8', '#a855f7'];
-
-                    ctx.strokeStyle = colors[0];
-                    ctx.lineWidth = 6;
-                    ctx.beginPath();
-                    wpmHistory.forEach((point, i) => {
-                        const x = (point.time / maxTime) * width;
-                        const y = height - (point.wpm / maxWpm) * height;
-                        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-                    });
-                    ctx.stroke();
+            } else {
+                // Incorrect character  
+                charElement.classList.add('incorrect');
+                errors++;
+                // Still advance to next character on error
+                charIndex++;
+                if (charIndex < currentQuote.text.length) {
+                    document.getElementById(`char${charIndex}`).classList.add('cursor');
+                } else {
+                    finishTest();
                 }
             }
+        });
 
-            // Load previous history
-            const savedHistory = localStorage.getItem('previousWpmHistory');
-            if (savedHistory) {
-                previousWpmHistory = JSON.parse(savedHistory);
-            }
+        // Focus quote display on click
+        quoteDisplay.addEventListener('click', () => {
+            quoteDisplay.focus();
+        });
 
-            // Initialize
+        // Focus on load
+        window.addEventListener('load', () => {
+            quoteDisplay.focus();
+        });
+
+        // Finish test
+        function finishTest() {
+            clearInterval(timerInterval);
+            isTestActive = false;
+            instruction.innerHTML = '<span style="color: var(--glow-1); font-weight: 600;">🎉 Completed! Try again to beat your score.</span>';
+
+            previousWpmHistory = [...wpmHistory];
+            localStorage.setItem('previousWpmHistory', JSON.stringify(previousWpmHistory));
+        }
+
+        // Reset test
+        function resetTest() {
+            clearInterval(timerInterval);
+            startTime = null;
+            charIndex = 0;
+            errors = 0;
+            wpmHistory = [];
+            isTestActive = false;
+
+            wpmDisplay.textContent = '0';
+            accuracyDisplay.textContent = '100';
+            timeDisplay.textContent = '0';
+            errorsDisplay.textContent = '0';
+            instruction.textContent = 'Click above and start typing to begin the race!';
+
             displayQuote();
             drawGraph();
+            quoteDisplay.focus();
+        }
 
-            // Theme Toggle
-            const themeToggle = document.getElementById('themeToggle');
-            const toggleIcon = themeToggle.querySelector('.toggle-icon');
-            const toggleLabel = themeToggle.querySelector('.toggle-label');
+        // New quote
+        function newQuote() {
+            const newQuoteObj = quotes[Math.floor(Math.random() * quotes.length)];
+            currentQuote = newQuoteObj;
+            previousWpmHistory = [];
+            resetTest();
+        }
 
-            if (localStorage.getItem('theme') === 'eco') {
-                document.body.classList.add('eco-mode');
-                toggleIcon.textContent = '🌱';
-                toggleLabel.textContent = 'Eco';
-            }
+        // Draw graph
+        function drawGraph() {
+            const ctx = graphCanvas.getContext('2d');
+            const width = graphCanvas.width = graphCanvas.offsetWidth * 2;
+            const height = graphCanvas.height = graphCanvas.offsetHeight * 2;
 
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('eco-mode');
-                const isEco = document.body.classList.contains('eco-mode');
-                toggleIcon.textContent = isEco ? '🌱' : '🌙';
-                toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
-                localStorage.setItem('theme', isEco ? 'eco' : 'tech');
-                drawGraph();
-            });
+            ctx.clearRect(0, 0, width, height);
 
-            // Particle Canvas (same as other pages)
-            const canvas = document.getElementById('particleCanvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            const particleCount = 80;
-            const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
-            const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
+            const maxWpm = Math.max(...wpmHistory.map(d => d.wpm), ...previousWpmHistory.map(d => d.wpm), 100);
+            const maxTime = Math.max(...wpmHistory.map(d => d.time), ...previousWpmHistory.map(d => d.time), 1);
 
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.vx = (Math.random() - 0.5) * 0.5;
-                    this.vy = (Math.random() - 0.5) * 0.5;
-                    this.radius = Math.random() * 2 + 1;
-                    this.colorIndex = Math.floor(Math.random() * 3);
-                }
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-                }
-                draw() {
-                    const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
-                    ctx.fillStyle = colors[this.colorIndex];
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
+            // Draw previous attempt (ghost)
+            if (previousWpmHistory.length > 0) {
+                ctx.strokeStyle = 'rgba(136, 136, 136, 0.5)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                previousWpmHistory.forEach((point, i) => {
+                    const x = (point.time / maxTime) * width;
+                    const y = height - (point.wpm / maxWpm) * height;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
                 });
-                requestAnimationFrame(animate);
+                ctx.stroke();
             }
-            animate();
+
+            // Draw current attempt
+            if (wpmHistory.length > 0) {
+                const colors = document.body.classList.contains('eco-mode')
+                    ? ['#84cc16', '#10b981', '#22c55e']
+                    : ['#22d3ee', '#818cf8', '#a855f7'];
+
+                ctx.strokeStyle = colors[0];
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                wpmHistory.forEach((point, i) => {
+                    const x = (point.time / maxTime) * width;
+                    const y = height - (point.wpm / maxWpm) * height;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+            }
+        }
+
+        // Load previous history
+        const savedHistory = localStorage.getItem('previousWpmHistory');
+        if (savedHistory) {
+            previousWpmHistory = JSON.parse(savedHistory);
+        }
+
+        // Initialize
+        displayQuote();
+        drawGraph();
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const toggleIcon = themeToggle.querySelector('.toggle-icon');
+        const toggleLabel = themeToggle.querySelector('.toggle-label');
+
+        if (localStorage.getItem('theme') === 'eco') {
+            document.body.classList.add('eco-mode');
+            toggleIcon.textContent = '🌱';
+            toggleLabel.textContent = 'Eco';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('eco-mode');
+            const isEco = document.body.classList.contains('eco-mode');
+            toggleIcon.textContent = isEco ? '🌱' : '🌙';
+            toggleLabel.textContent = isEco ? 'Eco' : 'Mode';
+            localStorage.setItem('theme', isEco ? 'eco' : 'tech');
+            drawGraph();
+        });
+
+        // Particle Canvas (same as other pages)
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 80;
+        const techColors = ['#38bdf8', '#818cf8', '#a855f7'];
+        const ecoColors = ['#84cc16', '#10b981', '#22c55e'];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.colorIndex = Math.floor(Math.random() * 3);
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                const colors = document.body.classList.contains('eco-mode') ? ecoColors : techColors;
+                ctx.fillStyle = colors[this.colorIndex];
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
     </script>
 </body>
 
