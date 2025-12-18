@@ -113,12 +113,6 @@ vercel dev
 - Keyboard navigation support
 - Focus states for all interactive components
 
-### **Responsive Design**
-- Mobile-first CSS approach
-- Touch event support (typing game, particle interactions)
-- Flexible grid layouts (CSS Grid/Flexbox)
-- Breakpoints: 768px (tablet), 1024px (desktop)
-
 ## 🧪 Technical Highlights
 
 **Particle System:**
@@ -137,13 +131,6 @@ vercel dev
 - Custom shader for vertex coloring
 - Multi-layer wireframe (3 concentric spheres)
 - Mouse-influenced rotation quaternion
-
-## 📊 Performance Metrics
-
-- **Lighthouse Score:** 95+ (Performance, Best Practices, SEO)
-- **First Contentful Paint:** <1.2s
-- **Time to Interactive:** <2.0s
-- **Canvas FPS:** Consistent 60fps on modern hardware
 
 ## 🛠️ Technologies
 
