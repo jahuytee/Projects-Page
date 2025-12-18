@@ -1110,22 +1110,26 @@
                 // ===== MOON SETUP =====
                 const moonRadius = radius * 0.27; // Moon is ~27% of Earth's size
                 const moonOrbitRadius = radius * 2.5; // Orbit at 2.5x Earth radius
-                const moonGeo = new THREE.SphereGeometry(moonRadius, 16, 16);
+
+                // Use IcosahedronGeometry to match Earth's low-poly aesthetic
+                const moonGeo = new THREE.IcosahedronGeometry(moonRadius, 2);
                 const moonMat = new THREE.MeshBasicMaterial({
                     color: 0xaaaaaa,
                     transparent: true,
-                    opacity: 0
+                    opacity: 0,
+                    flatShading: true // Match Earth's flat shading for consistency
                 });
                 const moonMesh = new THREE.Mesh(moonGeo, moonMat);
                 moonMesh.position.set(moonOrbitRadius, 0, 0); // Start position
                 scene.add(moonMesh);
 
-                // Moon glow
-                const moonGlowGeo = new THREE.SphereGeometry(moonRadius * 1.3, 16, 16);
+                // Moon glow (also icosahedron for consistency)
+                const moonGlowGeo = new THREE.IcosahedronGeometry(moonRadius * 1.2, 1);
                 const moonGlowMat = new THREE.MeshBasicMaterial({
-                    color: 0xffffff,
+                    color: 0xeeeeee,
                     transparent: true,
-                    opacity: 0
+                    opacity: 0,
+                    wireframe: true
                 });
                 const moonGlow = new THREE.Mesh(moonGlowGeo, moonGlowMat);
                 moonMesh.add(moonGlow);
@@ -1254,24 +1258,17 @@
                     }
 
                     // ===== MOON ORBITAL MECHANICS =====
-                    // Always orbit after spawn begins
-                    if (isInView && startTime) {
-                        const elapsed = (performance.now() - startTime) / 1000;
-                        const moonStartTime = stage1Duration + stage2Duration + stage3Duration;
+                    // Calculate orbit position every frame (smooth continuous motion)
+                    const totalElapsed = performance.now() / 1000;
+                    const orbitSpeed = 0.2; // Slower than Earth rotation
+                    const angle = totalElapsed * orbitSpeed;
 
-                        if (elapsed > moonStartTime) {
-                            const orbitTime = elapsed - moonStartTime;
-                            const orbitSpeed = 0.15; // Moon completes orbit slower than Earth rotation
-                            const angle = orbitTime * orbitSpeed;
+                    // Circular orbit in XZ plane
+                    moonMesh.position.x = Math.cos(angle) * moonOrbitRadius;
+                    moonMesh.position.z = Math.sin(angle) * moonOrbitRadius;
 
-                            // Circular orbit around Earth
-                            moonMesh.position.x = Math.cos(angle) * moonOrbitRadius;
-                            moonMesh.position.z = Math.sin(angle) * moonOrbitRadius;
-
-                            // Moon self-rotation (tidally locked - same face to Earth)
-                            moonMesh.rotation.y = -angle;
-                        }
-                    }
+                    // Tidally locked rotation
+                    moonMesh.rotation.y = -angle;
 
                     // Auto rotation
                     solidMesh.rotation.y += 0.003;
