@@ -1109,30 +1109,31 @@
 
                 // ===== MOON SETUP =====
                 const moonRadius = radius * 0.27; // Moon is ~27% of Earth's size
-                const moonOrbitRadius = radius * 2.5; // Orbit at 2.5x Earth radius
+                const moonOrbitRadius = radius * 2.5; // Static position distance
 
-                // Use IcosahedronGeometry to match Earth's low-poly aesthetic
-                const moonGeo = new THREE.IcosahedronGeometry(moonRadius, 2);
+                // Higher subdivision for more defined shape like Earth
+                const moonGeo = new THREE.IcosahedronGeometry(moonRadius, 4); // Subdivision 4 for detail
                 const moonMat = new THREE.MeshBasicMaterial({
-                    color: 0xaaaaaa,
+                    color: 0xc0c0c0, // Shiny silver-gray
                     transparent: true,
                     opacity: 0,
-                    flatShading: true // Match Earth's flat shading for consistency
+                    flatShading: true
                 });
                 const moonMesh = new THREE.Mesh(moonGeo, moonMat);
-                moonMesh.position.set(moonOrbitRadius, 0, 0); // Start position
+                // Static position to the left
+                moonMesh.position.set(-moonOrbitRadius, 0, 0);
                 scene.add(moonMesh);
 
-                // Moon glow (also icosahedron for consistency)
-                const moonGlowGeo = new THREE.IcosahedronGeometry(moonRadius * 1.2, 1);
-                const moonGlowMat = new THREE.MeshBasicMaterial({
-                    color: 0xeeeeee,
+                // Subtle wireframe overlay for depth
+                const moonWireGeo = new THREE.IcosahedronGeometry(moonRadius * 1.02, 2);
+                const moonWireMat = new THREE.MeshBasicMaterial({
+                    color: 0xe0e0e0, // Lighter gray for highlight
                     transparent: true,
                     opacity: 0,
                     wireframe: true
                 });
-                const moonGlow = new THREE.Mesh(moonGlowGeo, moonGlowMat);
-                moonMesh.add(moonGlow);
+                const moonWire = new THREE.Mesh(moonWireGeo, moonWireMat);
+                moonMesh.add(moonWire);
 
                 // ===== ANIMATION TIMING =====
                 const stage1Duration = 3;   // Wireframe only
@@ -1226,7 +1227,7 @@
                             innerWireMat.opacity = 0;
                         }
 
-                        // STAGE 4: Moon Arrival
+                        // STAGE 4: Moon Arrival (static, no orbit)
                         if (elapsed > stage1Duration + stage2Duration + stage3Duration) {
                             const moonElapsed = elapsed - (stage1Duration + stage2Duration + stage3Duration);
 
@@ -1245,30 +1246,17 @@
                                 }
                                 moonMesh.scale.set(scale, scale, scale);
 
-                                // Fade in moon and glow
+                                // Fade in moon and wireframe highlight
                                 moonMat.opacity = eased;
-                                moonGlowMat.opacity = eased * 0.3;
+                                moonWireMat.opacity = eased * 0.2;
                             } else {
-                                // Moon fully materialized
+                                // Moon fully materialized - static position
                                 moonMesh.scale.set(1, 1, 1);
                                 moonMat.opacity = 1;
-                                moonGlowMat.opacity = 0.3;
+                                moonWireMat.opacity = 0.2;
                             }
                         }
                     }
-
-                    // ===== MOON ORBITAL MECHANICS =====
-                    // Calculate orbit position every frame (smooth continuous motion)
-                    const totalElapsed = performance.now() / 1000;
-                    const orbitSpeed = 0.2; // Slower than Earth rotation
-                    const angle = totalElapsed * orbitSpeed;
-
-                    // Circular orbit in XZ plane
-                    moonMesh.position.x = Math.cos(angle) * moonOrbitRadius;
-                    moonMesh.position.z = Math.sin(angle) * moonOrbitRadius;
-
-                    // Tidally locked rotation
-                    moonMesh.rotation.y = -angle;
 
                     // Auto rotation
                     solidMesh.rotation.y += 0.003;
