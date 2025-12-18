@@ -25,7 +25,7 @@
 
     <!-- Particle Background Canvas -->
     <canvas id="particleCanvas"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; cursor: grab;"></canvas>
 
     <nav>
         <ul class="nav-links">
@@ -1289,6 +1289,7 @@
             });
 
             drawConnections();
+            drawZapEffects(); // Draw zap animations
             requestAnimationFrame(animate);
         }
 
@@ -1301,6 +1302,200 @@
             resizeCanvas();
             initParticles();
         });
+
+        // ===== INTERACTIVE DRAG & DROP =====
+        let draggedParticle = null;
+        let isDragging = false;
+        let previousConnections = new Set(); // Track connections for each particle
+        let zapEffects = []; // Store active zap animations
+
+        // Get nearby particles (for connection detection)
+        function getNearbyParticles(particle) {
+            const nearby = new Set();
+            particles.forEach((p, idx) => {
+                if (p === particle) return;
+                const dx = particle.x - p.x;
+                const dy = particle.y - p.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < connectionDistance) {
+                    nearby.add(idx);
+                }
+            });
+            return nearby;
+        }
+
+        // Create connection key for tracking
+        function getConnectionKey(idx1, idx2) {
+            return idx1 < idx2 ? `${idx1}-${idx2}` : `${idx2}-${idx1}`;
+        }
+
+        // Mouse/Touch event handlers
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function findParticleAtPosition(x, y) {
+            const clickRadius = 15; // Easier to grab
+            for (let particle of particles) {
+                const dx = particle.x - x;
+                const dy = particle.y - y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < clickRadius) {
+                    return particle;
+                }
+            }
+            return null;
+        }
+
+        // Mouse down - grab particle
+        function handleMouseDown(e) {
+            const pos = getMousePos(e);
+            const particle = findParticleAtPosition(pos.x, pos.y);
+
+            if (particle) {
+                draggedParticle = particle;
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+
+                // Store particle's original velocity
+                particle.originalVx = particle.vx;
+                particle.originalVy = particle.vy;
+                particle.vx = 0;
+                particle.vy = 0;
+
+                // Track initial connections
+                const particleIdx = particles.indexOf(particle);
+                previousConnections = getNearbyParticles(particle);
+
+                e.preventDefault();
+            }
+        }
+
+        // Mouse move - drag particle
+        function handleMouseMove(e) {
+            if (!isDragging || !draggedParticle) return;
+
+            const pos = getMousePos(e);
+            draggedParticle.x = pos.x;
+            draggedParticle.y = pos.y;
+
+            // Check for new/broken connections
+            const particleIdx = particles.indexOf(draggedParticle);
+            const currentConnections = getNearbyParticles(draggedParticle);
+
+            // Find new connections (zap!)
+            currentConnections.forEach(idx => {
+                if (!previousConnections.has(idx)) {
+                    // New connection formed! Create zap effect
+                    const otherParticle = particles[idx];
+                    zapEffects.push({
+                        x: (draggedParticle.x + otherParticle.x) / 2,
+                        y: (draggedParticle.y + otherParticle.y) / 2,
+                        age: 0,
+                        maxAge: 30
+                    });
+                }
+            });
+
+            previousConnections = currentConnections;
+            e.preventDefault();
+        }
+
+        // Mouse up - release particle
+        function handleMouseUp(e) {
+            if (draggedParticle) {
+                // Restore some velocity for natural drift
+                draggedParticle.vx = draggedParticle.originalVx * 0.5;
+                draggedParticle.vy = draggedParticle.originalVy * 0.5;
+            }
+
+            draggedParticle = null;
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+            previousConnections.clear();
+        }
+
+        // Add event listeners
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('mouseleave', handleMouseUp);
+
+        // Touch support
+        canvas.addEventListener('touchstart', handleMouseDown, { passive: false });
+        canvas.addEventListener('touchmove', handleMouseMove, { passive: false });
+        canvas.addEventListener('touchend', handleMouseUp);
+
+        // Draw zap effects
+        function drawZapEffects() {
+            const colors = getColors();
+            zapEffects = zapEffects.filter(zap => {
+                zap.age++;
+                if (zap.age > zap.maxAge) return false;
+
+                const progress = zap.age / zap.maxAge;
+                const size = (1 - progress) * 20 + 5;
+                const opacity = (1 - progress) * 0.9;
+
+                // Outer glow
+                const gradient = ctx.createRadialGradient(zap.x, zap.y, 0, zap.x, zap.y, size);
+                gradient.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
+                gradient.addColorStop(0.3, `${colors[0].replace(')', `, ${opacity * 0.7})`).replace('rgb', 'rgba')}`);
+                gradient.addColorStop(0.6, `${colors[1].replace(')', `, ${opacity * 0.4})`).replace('rgb', 'rgba')}`);
+                gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+
+                ctx.beginPath();
+                ctx.arc(zap.x, zap.y, size, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Core spark
+                ctx.beginPath();
+                ctx.arc(zap.x, zap.y, 3 * (1 - progress * 0.5), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.fill();
+
+                return true;
+            });
+        }
+
+        // Override the update function for dragged particle
+        const originalUpdate = Particle.prototype.update;
+        Particle.prototype.update = function () {
+            if (this === draggedParticle) {
+                // Don't auto-update dragged particle's position
+                this.rotation += this.rotationSpeed;
+            } else {
+                originalUpdate.call(this);
+            }
+        };
+
+        // Enhanced draw for dragged particle (make it glow)
+        const originalDraw = Particle.prototype.draw;
+        Particle.prototype.draw = function () {
+            if (this === draggedParticle) {
+                const colors = getColors();
+
+                // Glow effect
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 4);
+                gradient.addColorStop(0, `${colors[this.colorIndex]}88`);
+                gradient.addColorStop(0.5, `${colors[this.colorIndex]}44`);
+                gradient.addColorStop(1, `${colors[this.colorIndex]}00`);
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 4, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+            }
+
+            originalDraw.call(this);
+        };
 
         // Scroll Reveal Animation using Intersection Observer
         const revealElements = document.querySelectorAll('.reveal, .reveal-stagger');
