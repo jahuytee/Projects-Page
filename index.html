@@ -1107,11 +1107,35 @@
 
                 camera.position.z = 14;
 
+                // ===== MOON SETUP =====
+                const moonRadius = radius * 0.27; // Moon is ~27% of Earth's size
+                const moonOrbitRadius = radius * 2.5; // Orbit at 2.5x Earth radius
+                const moonGeo = new THREE.SphereGeometry(moonRadius, 16, 16);
+                const moonMat = new THREE.MeshBasicMaterial({
+                    color: 0xaaaaaa,
+                    transparent: true,
+                    opacity: 0
+                });
+                const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+                moonMesh.position.set(moonOrbitRadius, 0, 0); // Start position
+                scene.add(moonMesh);
+
+                // Moon glow
+                const moonGlowGeo = new THREE.SphereGeometry(moonRadius * 1.3, 16, 16);
+                const moonGlowMat = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0
+                });
+                const moonGlow = new THREE.Mesh(moonGlowGeo, moonGlowMat);
+                moonMesh.add(moonGlow);
+
                 // ===== ANIMATION TIMING =====
                 const stage1Duration = 3;   // Wireframe only
                 const stage2Duration = 2.5; // Triangle construction
                 const stage3Duration = 4;   // Earth colors
-                const totalDuration = stage1Duration + stage2Duration + stage3Duration;
+                const stage4Duration = 2;   // Moon arrival
+                const totalDuration = stage1Duration + stage2Duration + stage3Duration + stage4Duration;
 
                 let startTime = null;
                 let isInView = false;
@@ -1196,6 +1220,56 @@
                             outerWireMat.opacity = 0;
                             midWireMat.opacity = 0;
                             innerWireMat.opacity = 0;
+                        }
+
+                        // STAGE 4: Moon Arrival
+                        if (elapsed > stage1Duration + stage2Duration + stage3Duration) {
+                            const moonElapsed = elapsed - (stage1Duration + stage2Duration + stage3Duration);
+
+                            if (moonElapsed < stage4Duration) {
+                                // Moon spawn animation (0 - 2 seconds)
+                                const t = moonElapsed / stage4Duration;
+                                const eased = 1 - Math.pow(1 - t, 3); // Ease out cubic
+
+                                // Scale up with "pop" (overshoot effect)
+                                let scale;
+                                if (t < 0.6) {
+                                    scale = eased * 1.2; // Overshoot to 120%
+                                } else {
+                                    const bounce = (t - 0.6) / 0.4;
+                                    scale = 1.2 - (bounce * 0.2); // Settle back to 100%
+                                }
+                                moonMesh.scale.set(scale, scale, scale);
+
+                                // Fade in moon and glow
+                                moonMat.opacity = eased;
+                                moonGlowMat.opacity = eased * 0.3;
+                            } else {
+                                // Moon fully materialized
+                                moonMesh.scale.set(1, 1, 1);
+                                moonMat.opacity = 1;
+                                moonGlowMat.opacity = 0.3;
+                            }
+                        }
+                    }
+
+                    // ===== MOON ORBITAL MECHANICS =====
+                    // Always orbit after spawn begins
+                    if (isInView && startTime) {
+                        const elapsed = (performance.now() - startTime) / 1000;
+                        const moonStartTime = stage1Duration + stage2Duration + stage3Duration;
+
+                        if (elapsed > moonStartTime) {
+                            const orbitTime = elapsed - moonStartTime;
+                            const orbitSpeed = 0.15; // Moon completes orbit slower than Earth rotation
+                            const angle = orbitTime * orbitSpeed;
+
+                            // Circular orbit around Earth
+                            moonMesh.position.x = Math.cos(angle) * moonOrbitRadius;
+                            moonMesh.position.z = Math.sin(angle) * moonOrbitRadius;
+
+                            // Moon self-rotation (tidally locked - same face to Earth)
+                            moonMesh.rotation.y = -angle;
                         }
                     }
 
