@@ -10,6 +10,7 @@ A modern, responsive portfolio website showcasing projects in embedded systems, 
 - **HTML5/CSS3/Vanilla JavaScript** - Zero framework dependencies for maximum performance
 - **CSS Custom Properties** - Dynamic theming system (Tech/Eco modes)
 - **Canvas API** - Particle constellation background with physics simulation
+- **Web Audio API** - Real-time audio frequency/waveform analysis for vinyl visualizer
 - **Three.js** - 3D globe rendering with progressive loading animation
 - **Intersection Observer API** - Lazy-loaded scroll animations
 
@@ -49,7 +50,14 @@ A modern, responsive portfolio website showcasing projects in embedded systems, 
 - Spark effects at connection midpoints
 - Optimized canvas rendering (60fps)
 
-### **5. Project Detail Pages**
+### **5. Audio Visualizer**
+- **Web Audio API** - Real-time frequency and time domain analysis
+- **FFT (Fast Fourier Transform)** - Spectrum analyzer display
+- Dual visualization modes: Waveform (time domain) + Frequency spectrum
+- Favorite vinyl album showcase integration
+- Canvas-based rendering with gradient effects
+
+### **6. Project Detail Pages**
 - PCB-style circuit animations on hover (SVG path generation)
 - Parallax 3D globe with Three.js
 - Progressive triangle-by-triangle mesh construction
@@ -131,6 +139,13 @@ vercel dev
 - Custom shader for vertex coloring
 - Multi-layer wireframe (3 concentric spheres)
 - Mouse-influenced rotation quaternion
+
+**Audio Visualizer:**
+- Web Audio API with AnalyserNode for frequency data
+- FFT size: 2048 samples for high-resolution spectrum
+- Time domain: Oscilloscope-style waveform rendering
+- Frequency domain: Bar-based spectrum analyzer (0-20kHz)
+- Synchronized canvas animations at 60fps
 
 ## 🛠️ Technologies
 
