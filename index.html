@@ -1258,6 +1258,20 @@
                         }
                     }
 
+                    // ===== MOON ORBITAL MECHANICS (XY plane) =====
+                    // Orbit in XY plane (left-right, up-down) to keep constant distance from camera
+                    const totalElapsed = performance.now() / 1000;
+                    const orbitSpeed = 0.15; // Slow, graceful orbit
+                    const angle = totalElapsed * orbitSpeed;
+
+                    // Circular orbit in XY plane (no Z change = constant size)
+                    moonMesh.position.x = Math.cos(angle) * moonOrbitRadius;
+                    moonMesh.position.y = Math.sin(angle) * moonOrbitRadius;
+                    moonMesh.position.z = 0; // Fixed Z position
+
+                    // Gentle rotation for visual interest
+                    moonMesh.rotation.y = angle * 0.3;
+
                     // Auto rotation
                     solidMesh.rotation.y += 0.003;
                     outerWireframe.rotation.y += 0.003;
