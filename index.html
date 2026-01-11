@@ -28,16 +28,84 @@
     <canvas id="particleCanvas"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
 
-    <nav>
-        <ul class="nav-links">
-            <li><a href="#about">About Me</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact Me</a></li>
+    <!-- Hamburger Menu Button -->
+    <button id="menuToggle" class="hamburger-menu" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 
-        </ul>
-    </nav>
+    <!-- Side Panel Menu -->
+    <div id="sidePanel" class="side-panel">
+        <button id="closeMenu" class="close-menu" aria-label="Close menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Menu Section -->
+        <div class="menu-section">
+            <h3 class="menu-heading">MENU</h3>
+            <nav class="menu-nav">
+                <a href="#about" class="menu-link">
+                    <span class="menu-dot" style="background: #22d3ee;"></span>
+                    Home
+                </a>
+                <a href="#about" class="menu-link">
+                    <span class="menu-dot" style="background: #a855f7;"></span>
+                    About Me
+                </a>
+                <a href="#skills" class="menu-link">
+                    <span class="menu-dot" style="background: #10b981;"></span>
+                    Skills
+                </a>
+                <a href="#experience" class="menu-link">
+                    <span class="menu-dot" style="background: #f59e0b;"></span>
+                    Experience
+                </a>
+                <a href="#projects" class="menu-link">
+                    <span class="menu-dot" style="background: #ef4444;"></span>
+                    Projects
+                </a>
+                <a href="#contact" class="menu-link">
+                    <span class="menu-dot" style="background: #8b5cf6;"></span>
+                    Contact Me
+                </a>
+            </nav>
+        </div>
+
+        <!-- Social Section -->
+        <div class="menu-section">
+            <h3 class="menu-heading">SOCIAL</h3>
+            <div class="social-links-menu">
+                <a href="https://github.com/jahuytee" target="_blank" class="social-link-menu">
+                    <i class="fa-brands fa-github"></i>
+                    <span>Github</span>
+                </a>
+                <a href="https://www.linkedin.com/in/jason-tran-a05b32243/" target="_blank" class="social-link-menu">
+                    <i class="fa-brands fa-linkedin"></i>
+                    <span>Linkedin</span>
+                </a>
+                <a href="https://open.spotify.com/user/22gyhbpasubyow2igf7sisewy?si=391f056954fe47f2" target="_blank"
+                    class="social-link-menu">
+                    <i class="fa-brands fa-spotify"></i>
+                    <span>Spotify</span>
+                </a>
+                <button onclick="copyToClipboard('jasonhuytran', this)" class="social-link-menu"
+                    style="background: none; border: none; padding: 0; cursor: pointer;">
+                    <i class="fa-brands fa-discord"></i>
+                    <span>Discord</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="menu-section contact-section">
+            <h3 class="menu-heading">GET IN TOUCH</h3>
+            <a href="mailto:jasonhuytran@gmail.com" class="contact-email">jasonhuytran@gmail.com</a>
+        </div>
+    </div>
+
+    <!-- Backdrop Overlay -->
+    <div id="menuBackdrop" class="menu-backdrop"></div>
 
     <!-- Theme Toggle Button (Fixed Position) -->
     <button id="themeToggle" class="theme-toggle">
@@ -255,7 +323,7 @@
                                 <button id="playBtn" class="glass-panel"
                                     style="border-radius: 50px; padding: 0.4rem 1.2rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.6);">
                                     <i class="fa-solid fa-play" id="playIcon"></i>
-                                    <span style="font-size: 0.75rem;">Play Demo</span>
+                                    <span style="font-size: 0.75rem; color: white;">Play Demo</span>
                                 </button>
                             </div>
 
@@ -1727,6 +1795,53 @@
                 }
             }
         }, 1000);
+
+        // Hamburger Menu Functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const closeMenu = document.getElementById('closeMenu');
+        const sidePanel = document.getElementById('sidePanel');
+        const menuBackdrop = document.getElementById('menuBackdrop');
+        const menuLinks = document.querySelectorAll('.menu-link');
+
+        // Open menu
+        function openMenu() {
+            sidePanel.classList.add('active');
+            menuBackdrop.classList.add('active');
+            menuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
+        }
+
+        // Close menu
+        function closeMenuFunc() {
+            sidePanel.classList.remove('active');
+            menuBackdrop.classList.remove('active');
+            menuToggle.classList.remove('active');
+            document.body.style.overflow = ''; // Restore body scroll
+        }
+
+        // Toggle menu on hamburger click
+        menuToggle.addEventListener('click', openMenu);
+
+        // Close menu on close button click
+        closeMenu.addEventListener('click', closeMenuFunc);
+
+        // Close menu on backdrop click
+        menuBackdrop.addEventListener('click', closeMenuFunc);
+
+        // Close menu on navigation link click and smooth scroll
+        menuLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                closeMenuFunc();
+                // Let the default smooth scroll behavior happen
+            });
+        });
+
+        // Close menu on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidePanel.classList.contains('active')) {
+                closeMenuFunc();
+            }
+        });
     </script>
 </body>
 
