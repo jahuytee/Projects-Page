@@ -1882,8 +1882,11 @@
             for (let i = 0; i < totalRects; i++) {
                 const rect = document.createElement('div');
                 rect.className = 'grid-rectangle';
-                // Randomize drop timing for stagger effect
-                rect.style.animationDelay = `${Math.random() * 0.5}s`;
+                // Calculate column for left-to-right reveal
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                // Delay based on column (left to right) with slight row variation
+                rect.style.animationDelay = `${col * 0.08 + row * 0.02}s`;
                 rectangleGrid.appendChild(rect);
             }
         }
