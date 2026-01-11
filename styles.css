@@ -1536,10 +1536,10 @@ body.eco-mode .theme-toggle:hover {
     font-family: 'Space Grotesk', sans-serif;
     font-size: clamp(3rem, 10vw, 8rem);
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     color: #ffffff;
     display: flex;
-    gap: 0.1em;
+    gap: 0.05em;
     position: relative;
     z-index: 10001;
 }
@@ -1600,12 +1600,12 @@ body.eco-mode .theme-toggle:hover {
 
 /* Letter Blink Effect */
 .intro-letter.blink-odd {
-    animation: letterBlink 0.15s ease-in-out 3;
+    animation: letterBlink 0.3s ease-in-out 3 !important;
 }
 
 .intro-letter.blink-even {
-    animation: letterBlink 0.15s ease-in-out 3;
-    animation-delay: 0.45s;
+    animation: letterBlink 0.3s ease-in-out 3 !important;
+    animation-delay: 0.9s !important;
 }
 
 /* Rectangle Grid */
@@ -1699,15 +1699,15 @@ body.eco-mode .theme-toggle:hover {
     0%,
     100% {
         color: #ffffff;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
     }
 
     50% {
-        color: #FFD700;
+        color: #ffffff;
         text-shadow:
-            0 0 30px rgba(255, 215, 0, 1),
-            0 0 60px rgba(255, 215, 0, 0.8),
-            0 0 90px rgba(255, 215, 0, 0.6);
+            0 0 40px rgba(255, 255, 0, 1),
+            0 0 80px rgba(255, 215, 0, 1),
+            0 0 120px rgba(255, 215, 0, 0.8);
     }
 }
 
