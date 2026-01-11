@@ -140,8 +140,8 @@ h3,
     border-radius: 0 0 0 50%;
 
     /* Smooth transitions - Slowed down to see animation */
-    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-        border-radius 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+        border-radius 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Panel Active State: Slides in and becomes rectangle */
@@ -1598,20 +1598,14 @@ body.eco-mode .theme-toggle:hover {
     animation-delay: 1.0s;
 }
 
-/* Electric Flash Overlay */
-.electric-flash {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    opacity: 0;
-    z-index: 10002;
+/* Letter Blink Effect */
+.intro-letter.blink-odd {
+    animation: letterBlink 0.15s ease-in-out 3;
 }
 
-.electric-flash.active {
-    animation: electricPulse 0.6s ease-in-out;
+.intro-letter.blink-even {
+    animation: letterBlink 0.15s ease-in-out 3;
+    animation-delay: 0.45s;
 }
 
 /* Rectangle Grid */
@@ -1693,6 +1687,24 @@ body.eco-mode .theme-toggle:hover {
     100% {
         background: transparent;
         opacity: 0;
+    }
+}
+
+/* Letter blink animation */
+@keyframes letterBlink {
+
+    0%,
+    100% {
+        color: #ffffff;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    50% {
+        color: #FFD700;
+        text-shadow:
+            0 0 30px rgba(255, 215, 0, 1),
+            0 0 60px rgba(255, 215, 0, 0.8),
+            0 0 90px rgba(255, 215, 0, 0.6);
     }
 }
 
