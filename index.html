@@ -1896,34 +1896,18 @@
             // Phase 1: Letters rise from bottom (0-1.3s)
             // CSS handles this automatically
 
-            // Phase 2: Alternating letter blinks (at 1.5s)
-            setTimeout(() => {
-                const letters = document.querySelectorAll('.intro-letter');
-                letters.forEach((letter, index) => {
-                    if (!letter.classList.contains('space')) {
-                        // Odd letters (J, S, N, R, N) blink first
-                        if (index % 2 === 0) {
-                            letter.classList.add('blink-odd');
-                        } else {
-                            // Even letters (A, O, T, A) blink second
-                            letter.classList.add('blink-even');
-                        }
-                    }
-                });
-            }, 1500);
-
-            // Phase 3: Rectangle grid drop (at 2.5s)
+            // Phase 2: Rectangle grid drop (at 1.8s)
             setTimeout(() => {
                 rectangleGrid.classList.add('active');
-            }, 2500);
+            }, 1800);
 
-            // Phase 4: Remove overlay (at 4.0s)
+            // Phase 3: Remove overlay (at 3.0s)
             setTimeout(() => {
                 introOverlay.classList.add('fade-out');
                 setTimeout(() => {
                     introOverlay.remove();
                 }, 500);
-            }, 4000);
+            }, 3000);
         }
 
         // Start intro on page load

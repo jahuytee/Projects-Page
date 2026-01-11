@@ -1536,10 +1536,10 @@ body.eco-mode .theme-toggle:hover {
     font-family: 'Space Grotesk', sans-serif;
     font-size: clamp(3rem, 10vw, 8rem);
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     color: #ffffff;
     display: flex;
-    gap: 0.05em;
+    gap: 0.03em;
     position: relative;
     z-index: 10001;
 }
