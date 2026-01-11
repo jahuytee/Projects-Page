@@ -21,6 +21,28 @@
 </head>
 
 <body>
+    <!-- Animated Intro Overlay -->
+    <div id="introOverlay" class="intro-overlay">
+        <div class="intro-name-container">
+            <span class="intro-letter">J</span>
+            <span class="intro-letter">A</span>
+            <span class="intro-letter">S</span>
+            <span class="intro-letter">O</span>
+            <span class="intro-letter">N</span>
+            <span class="intro-letter space"> </span>
+            <span class="intro-letter">T</span>
+            <span class="intro-letter">R</span>
+            <span class="intro-letter">A</span>
+            <span class="intro-letter">N</span>
+        </div>
+
+        <!-- Electric flash overlay -->
+        <div class="electric-flash" id="electricFlash"></div>
+
+        <!-- Rectangle grid -->
+        <div class="rectangle-grid" id="rectangleGrid"></div>
+    </div>
+
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -1843,6 +1865,58 @@
                 closeMenuFunc();
             }
         });
+
+        // ========== INTRO ANIMATION SEQUENCE ==========
+        const introOverlay = document.getElementById('introOverlay');
+        const electricFlash = document.getElementById('electricFlash');
+        const rectangleGrid = document.getElementById('rectangleGrid');
+
+        // Generate rectangle grid
+        function generateGrid() {
+            const cols = window.innerWidth > 768 ? 10 : 6;
+            const rows = window.innerWidth > 768 ? 8 : 10;
+            const totalRects = cols * rows;
+
+            rectangleGrid.innerHTML = '';
+
+            for (let i = 0; i < totalRects; i++) {
+                const rect = document.createElement('div');
+                rect.className = 'grid-rectangle';
+                // Randomize drop timing slightly
+                rect.style.animationDelay = `${Math.random() * 0.4}s`;
+                rectangleGrid.appendChild(rect);
+            }
+        }
+
+        // Run intro sequence
+        function playIntroSequence() {
+            // Generate the grid
+            generateGrid();
+
+            // Phase 1: Letters type in (0-1.3s)
+            // CSS handles this automatically
+
+            // Phase 2: Electric flash (at 1.5s)
+            setTimeout(() => {
+                electricFlash.classList.add('active');
+            }, 1500);
+
+            // Phase 3: Rectangle grid drop (at 2.1s)
+            setTimeout(() => {
+                rectangleGrid.classList.add('active');
+            }, 2100);
+
+            // Phase 4: Remove overlay (at 3.5s)
+            setTimeout(() => {
+                introOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                    introOverlay.remove();
+                }, 500);
+            }, 3500);
+        }
+
+        // Start intro on page load
+        window.addEventListener('load', playIntroSequence);
     </script>
 </body>
 

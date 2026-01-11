@@ -1509,3 +1509,223 @@ body.eco-mode .theme-toggle:hover {
     font-weight: 600;
     letter-spacing: 0.02em;
 }
+
+/* ========== ANIMATED INTRO SEQUENCE ========== */
+
+/* Intro Overlay - Full Screen */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000000;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.intro-overlay.fade-out {
+    animation: fadeOutOverlay 0.5s ease-out forwards;
+}
+
+/* Name Container */
+.intro-name-container {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    display: flex;
+    gap: 0.1em;
+    position: relative;
+    z-index: 10001;
+}
+
+/* Individual Letters - Type Effect */
+.intro-letter {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: typeIn 0.3s ease-out forwards;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.intro-letter.space {
+    width: 0.5em;
+}
+
+/* Stagger each letter */
+.intro-letter:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.intro-letter:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.intro-letter:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.intro-letter:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.intro-letter:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.intro-letter:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* Space */
+.intro-letter:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.intro-letter:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+.intro-letter:nth-child(9) {
+    animation-delay: 0.9s;
+}
+
+.intro-letter:nth-child(10) {
+    animation-delay: 1.0s;
+}
+
+/* Electric Flash Overlay */
+.electric-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 10002;
+}
+
+.electric-flash.active {
+    animation: electricPulse 0.6s ease-in-out;
+}
+
+/* Rectangle Grid */
+.rectangle-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 0;
+    z-index: 10003;
+    opacity: 0;
+}
+
+.rectangle-grid.active {
+    opacity: 1;
+}
+
+.grid-rectangle {
+    background: #000000;
+    animation: rectangleDrop 0.8s ease-in forwards;
+}
+
+/* ========== KEYFRAME ANIMATIONS ========== */
+
+/* Type-in effect for letters */
+@keyframes typeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-5px) scale(1.1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Electric flash effect */
+@keyframes electricPulse {
+    0% {
+        background: transparent;
+        opacity: 0;
+    }
+
+    10% {
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+        opacity: 1;
+    }
+
+    20% {
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.6) 0%, transparent 70%);
+        opacity: 0.8;
+    }
+
+    35% {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+        opacity: 1;
+    }
+
+    50% {
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, transparent 70%);
+        opacity: 0.9;
+    }
+
+    65% {
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.6;
+    }
+
+    100% {
+        background: transparent;
+        opacity: 0;
+    }
+}
+
+/* Rectangle drop animation */
+@keyframes rectangleDrop {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* Fade out entire overlay */
+@keyframes fadeOutOverlay {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .intro-name-container {
+        font-size: clamp(2rem, 12vw, 4rem);
+        letter-spacing: 0.05em;
+    }
+
+    .rectangle-grid {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+    }
+}
