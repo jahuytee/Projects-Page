@@ -1638,17 +1638,20 @@ body.eco-mode .theme-toggle:hover {
 @keyframes typeIn {
     0% {
         opacity: 0;
-        transform: translateY(20px) scale(0.8);
+        transform: translateY(100%) scaleY(0);
+        transform-origin: bottom;
     }
 
-    50% {
+    60% {
         opacity: 1;
-        transform: translateY(-5px) scale(1.1);
+        transform: translateY(0) scaleY(1.1);
+        transform-origin: bottom;
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0) scaleY(1);
+        transform-origin: bottom;
     }
 }
 
