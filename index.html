@@ -35,12 +35,6 @@
             <span class="intro-letter">A</span>
             <span class="intro-letter">N</span>
         </div>
-
-        <!-- Electric flash overlay -->
-        <div class="electric-flash" id="electricFlash"></div>
-
-        <!-- Rectangle grid -->
-        <div class="rectangle-grid" id="rectangleGrid"></div>
     </div>
 
     <!-- Scroll Progress Bar -->
@@ -1866,51 +1860,18 @@
             }
         });
 
-        // ========== INTRO ANIMATION SEQUENCE ==========
-        const introOverlay = document.getElementById('introOverlay');
-        const electricFlash = document.getElementById('electricFlash');
-        const rectangleGrid = document.getElementById('rectangleGrid');
-
-        // Generate rectangle grid
-        function generateGrid() {
-            const cols = window.innerWidth > 768 ? 10 : 6;
-            const rows = window.innerWidth > 768 ? 8 : 10;
-            const totalRects = cols * rows;
-
-            rectangleGrid.innerHTML = '';
-
-            for (let i = 0; i < totalRects; i++) {
-                const rect = document.createElement('div');
-                rect.className = 'grid-rectangle';
-                // Calculate column for left-to-right reveal
-                const col = i % cols;
-                const row = Math.floor(i / cols);
-                // Delay based on column (left to right) with slight row variation
-                rect.style.animationDelay = `${col * 0.08 + row * 0.02}s`;
-                rectangleGrid.appendChild(rect);
-            }
-        }
-
         // Run intro sequence
         function playIntroSequence() {
-            // Generate the grid
-            generateGrid();
-
             // Phase 1: Letters rise from bottom (0-1.3s)
             // CSS handles this automatically
 
-            // Phase 2: Rectangle grid drop (at 1.8s)
-            setTimeout(() => {
-                rectangleGrid.classList.add('active');
-            }, 1800);
-
-            // Phase 3: Remove overlay (at 3.0s)
+            // Phase 2: Fade out overlay (at 1.8s)
             setTimeout(() => {
                 introOverlay.classList.add('fade-out');
                 setTimeout(() => {
                     introOverlay.remove();
                 }, 500);
-            }, 3000);
+            }, 1800);
         }
 
         // Start intro on page load
