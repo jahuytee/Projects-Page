@@ -1882,8 +1882,8 @@
             for (let i = 0; i < totalRects; i++) {
                 const rect = document.createElement('div');
                 rect.className = 'grid-rectangle';
-                // Randomize drop timing slightly
-                rect.style.animationDelay = `${Math.random() * 0.4}s`;
+                // Randomize drop timing for stagger effect
+                rect.style.animationDelay = `${Math.random() * 0.5}s`;
                 rectangleGrid.appendChild(rect);
             }
         }

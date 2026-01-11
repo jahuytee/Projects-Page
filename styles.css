@@ -1621,6 +1621,7 @@ body.eco-mode .theme-toggle:hover {
     gap: 0;
     z-index: 10003;
     opacity: 0;
+    pointer-events: none;
 }
 
 .rectangle-grid.active {
@@ -1629,7 +1630,12 @@ body.eco-mode .theme-toggle:hover {
 
 .grid-rectangle {
     background: #000000;
-    animation: rectangleDrop 0.8s ease-in forwards;
+    border: 1px solid #0a0a0a;
+    opacity: 1;
+}
+
+.rectangle-grid.active .grid-rectangle {
+    animation: rectangleDrop 1.0s ease-in forwards;
 }
 
 /* ========== KEYFRAME ANIMATIONS ========== */
