@@ -1720,12 +1720,14 @@ body.eco-mode .theme-toggle:hover {
 /* Rectangle drop animation */
 @keyframes rectangleDrop {
     0% {
-        transform: translateY(0);
+        transform: scaleX(1);
+        transform-origin: left;
         opacity: 1;
     }
 
     100% {
-        transform: translateY(100vh);
+        transform: scaleX(0);
+        transform-origin: left;
         opacity: 0;
     }
 }
