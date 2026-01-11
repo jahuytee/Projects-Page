@@ -139,9 +139,9 @@ h3,
     transform: translateX(100%);
     border-radius: 0 0 0 50%;
 
-    /* Smooth transitions */
-    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-        border-radius 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Smooth transitions - Slowed down to see animation */
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+        border-radius 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Panel Active State: Slides in and becomes rectangle */
