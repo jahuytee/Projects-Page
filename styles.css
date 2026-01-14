@@ -1752,3 +1752,158 @@ body.eco-mode .theme-toggle:hover {
         grid-template-rows: repeat(10, 1fr);
     }
 }
+
+/* ========== BRANCH TREE PROJECTS LAYOUT ========== */
+
+/* Branch Tree Container */
+.projects-tree-container {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 0;
+    min-height: 2000px;
+}
+
+/* SVG Trunk and Branches */
+.tree-trunk-svg {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+}
+
+/* Trunk Line */
+.trunk-line {
+    stroke: var(--glow-1);
+    filter: drop-shadow(0 0 8px var(--glow-1));
+}
+
+body.eco-mode .trunk-line {
+    stroke: var(--glow-2);
+    filter: drop-shadow(0 0 8px var(--glow-2));
+}
+
+/* Branch Lines */
+.branch-line {
+    stroke: var(--glow-1);
+    opacity: 0;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    filter: drop-shadow(0 0 4px var(--glow-1));
+    transition: all 0.8s ease-out;
+}
+
+body.eco-mode .branch-line {
+    stroke: var(--glow-2);
+    filter: drop-shadow(0 0 4px var(--glow-2));
+}
+
+.branch-line.grow {
+    opacity: 0.5;
+    stroke-dashoffset: 0;
+}
+
+/* Tree Branch Container */
+.tree-branch {
+    position: absolute;
+    width: 450px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+    z-index: 1;
+}
+
+.tree-branch.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Left Branches */
+.tree-branch.left {
+    left: 5%;
+}
+
+.tree-branch.left[data-branch="1"] {
+    top: 150px;
+}
+
+.tree-branch.left[data-branch="3"] {
+    top: 700px;
+}
+
+.tree-branch.left[data-branch="5"] {
+    top: 1250px;
+}
+
+/* Right Branches */
+.tree-branch.right {
+    right: 5%;
+}
+
+.tree-branch.right[data-branch="2"] {
+    top: 425px;
+}
+
+.tree-branch.right[data-branch="4"] {
+    top: 975px;
+}
+
+.tree-branch.right[data-branch="6"] {
+    top: 1525px;
+}
+
+/* Stagger Animation Delays */
+.tree-branch[data-branch="1"] {
+    transition-delay: 0.1s;
+}
+
+.tree-branch[data-branch="2"] {
+    transition-delay: 0.2s;
+}
+
+.tree-branch[data-branch="3"] {
+    transition-delay: 0.3s;
+}
+
+.tree-branch[data-branch="4"] {
+    transition-delay: 0.4s;
+}
+
+.tree-branch[data-branch="5"] {
+    transition-delay: 0.5s;
+}
+
+.tree-branch[data-branch="6"] {
+    transition-delay: 0.6s;
+}
+
+/* Mobile Responsive - Stack Vertically */
+@media (max-width: 1024px) {
+    .projects-tree-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3rem;
+        min-height: auto;
+        padding: 2rem 1rem;
+    }
+
+    .tree-trunk-svg {
+        display: none;
+    }
+
+    .tree-branch {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+    }
+}
