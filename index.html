@@ -35,6 +35,9 @@
             <span class="intro-letter">A</span>
             <span class="intro-letter">N</span>
         </div>
+
+        <!-- Clip-path reveal grid -->
+        <div class="reveal-grid" id="revealGrid"></div>
     </div>
 
     <!-- Scroll Progress Bar -->
@@ -339,8 +342,10 @@
                                     Audio Visual</span>
                                 <button id="playBtn" class="glass-panel"
                                     style="border-radius: 50px; padding: 0.4rem 1.2rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.6);">
-                                    <i class="fa-solid fa-play" id="playIcon"></i>
-                                    <span style="font-size: 0.75rem; color: white;">Play Demo</span>
+                                    <i class="fa-solid fa-play" id="playIcon" style="vertical-align: middle;"></i>
+                                    <span
+                                        style="font-size: 0.75rem; color: white; line-height: 1; vertical-align: middle;">Play
+                                        Demo</span>
                                 </button>
                             </div>
 
@@ -1861,17 +1866,43 @@
         });
 
         // Run intro sequence
+        const introOverlay = document.getElementById('introOverlay');
+        const revealGrid = document.getElementById('revealGrid');
+
         function playIntroSequence() {
+            // Generate reveal grid
+            const cols = window.innerWidth > 768 ? 10 : 6;
+            const rows = window.innerWidth > 768 ? 8 : 10;
+            const totalWindows = cols * rows;
+
+            revealGrid.innerHTML = '';
+
+            for (let i = 0; i < totalWindows; i++) {
+                const window = document.createElement('div');
+                window.className = 'reveal-window';
+                // Calculate column for left-to-right reveal
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                // Delay based on column (left to right)
+                window.style.animationDelay = `${col * 0.06 + row * 0.02}s`;
+                revealGrid.appendChild(window);
+            }
+
             // Phase 1: Letters rise from bottom (0-1.3s)
             // CSS handles this automatically
 
-            // Phase 2: Fade out overlay (at 1.8s)
+            // Phase 2: Activate reveal windows (at 1.5s)
+            setTimeout(() => {
+                revealGrid.classList.add('active');
+            }, 1500);
+
+            // Phase 3: Fade out overlay (at 2.5s)
             setTimeout(() => {
                 introOverlay.classList.add('fade-out');
                 setTimeout(() => {
                     introOverlay.remove();
                 }, 500);
-            }, 1800);
+            }, 2500);
         }
 
         // Start intro on page load
